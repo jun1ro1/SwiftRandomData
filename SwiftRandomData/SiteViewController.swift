@@ -30,31 +30,87 @@ func intersection<T: Equatable>(x: [T], y: [T]) -> [T] {
     return x.filter {find(y, $0) == nil ? false : true}
 }
 
+// MARK: Cell Classes
+
+class J1TextFieldCell: UITableViewCell {
+    @IBOutlet var textField: UITextField!
+}
+
+class J1GeneratedPassCell: UITableViewCell {
+    @IBOutlet var textField: UITextField!
+}
+
+class J1StepperCell: UITableViewCell {
+    @IBOutlet var stepper: UIStepper!
+    @IBOutlet var label: UILabel!
+}
+
+class J1PcikerCell: UITableViewCell {
+    @IBOutlet var picker: UIPickerView!
+}
+
+class J1ButtonCell: UITableViewCell {
+    @IBOutlet var button: UIButton!
+}
+
 class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     // MARK: - Properties
     
     var detailItem: NSManagedObject?
     var deferedClosure = Array<()->Void>()
-    var appData = [String: String]()
     
+    var appData: [String: AnyObject] = [String: AnyObject](){
+        didSet {
+            self.configureView()
+        }
+    }
+    
+    let lengthArray          = [ 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 32 ]
+    var lengthLabel: UILabel?
+    
+    var passField: UITextField?
+    
+    var randgen = J1RandomData()
+    var randomField: UITextField?
+
+
     // MARK: - Coordinator functions between keys and index paths
+    
+    var _generatorShowed: Bool = false
     
     private var _keyToIndexPath: [String: NSIndexPath] {
         get {
             if self._editing {
-                return
-                    [
-                        "title":   NSIndexPath(forRow: 0, inSection:0),
-                        "url":     NSIndexPath(forRow: 1, inSection:0),
-                        "userid":  NSIndexPath(forRow: 0, inSection:1),
-                        "pass":    NSIndexPath(forRow: 0, inSection:2),
-                        "length":  NSIndexPath(forRow: 1, inSection:2),
-                        "char":    NSIndexPath(forRow: 2, inSection:2),
-                        "picker":  NSIndexPath(forRow: 3, inSection:2),
-                        "set":     NSIndexPath(forRow: 4, inSection:2),
-                        "memo":    NSIndexPath(forRow: 0, inSection:3) ]
-                
+                if self._generatorShowed {
+                    return
+                        [
+                            "title":     NSIndexPath(forRow: 0, inSection:0),
+                            "url":       NSIndexPath(forRow: 1, inSection:0),
+                            
+                            "userid":    NSIndexPath(forRow: 0, inSection:1),
+                            "pass":      NSIndexPath(forRow: 1, inSection:1),
+                            
+                            "generated": NSIndexPath(forRow: 0, inSection:2),
+                            "length":    NSIndexPath(forRow: 1, inSection:2),
+                            "picker":    NSIndexPath(forRow: 2, inSection:2),
+                            "set":       NSIndexPath(forRow: 3, inSection:2),
+
+                            "memo":      NSIndexPath(forRow: 0, inSection:3) ]
+                    
+                }
+                else {
+                    return
+                        [
+                            "title":     NSIndexPath(forRow: 0, inSection:0),
+                            "url":       NSIndexPath(forRow: 1, inSection:0),
+
+                            "userid":    NSIndexPath(forRow: 0, inSection:1),
+                            "pass":      NSIndexPath(forRow: 1, inSection:1),
+                            "generator": NSIndexPath(forRow: 2, inSection:1),
+
+                            "memo":      NSIndexPath(forRow: 0, inSection:2) ]
+                }
             }
             else {
                 return
@@ -123,7 +179,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         "char":     15,
         "picker":   16,
         "set":      17,
-        "memo":     18
+        "memo":     18,
+        "generator": 19
     ]
     
     func keyToTag(key: String) -> Int? {
@@ -158,116 +215,29 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         else {
             self.tableView.beginUpdates()
 
-            let beforeSection: Int = self._keyToIndexPath.values.array.map { $0.section }.reduce(-1) { max($0, $1) }
-//            let beforePaths: [NSIndexPath] = unique( self._keyToIndexPath.values.array.sorted {
-//                    $0.section == $1.section ? $0.row < $0.row : $0.section < $0.section
-//                } )
             let beforePaths: [NSIndexPath] = self._keyToIndexPath.values.array
+            var beforeSections: [Int] = beforePaths.map { $0.section }
             
             self._editing = editing
-
-            let afterSection: Int = self._keyToIndexPath.values.array.map { $0.section }.reduce(-1) { max($0, $1) }
-//            let afterPaths: [NSIndexPath]  = unique( self._keyToIndexPath.values.array.sorted {
-//                    $0.section == $1.section ? $0.row < $0.row : $0.section < $0.section
-//                } )
+            if !self._editing && self._generatorShowed {
+                self.refreshControl = nil
+                self._generatorShowed = false
+            }
+            
             let afterPaths: [NSIndexPath]  = self._keyToIndexPath.values.array
-
-            // compare sections
-            // a new section is added
-//            var insertedSections = [Int]()
-            if beforeSection < afterSection {
-                for i in (beforeSection + 1)...afterSection {
-                    self.tableView.insertSections(NSIndexSet(index: i), withRowAnimation: .Fade)
-//                    insertedSections += [i]
-                }
-            }
-
-            if afterSection < beforeSection {
-                for i in (afterSection + 1)...beforeSection {
-                    self.tableView.deleteSections(NSIndexSet(index: i), withRowAnimation: .Fade)
-                }
-            }
-
-            var newRows = difference(afterPaths, beforePaths)
-            let oldRows = difference(beforePaths, afterPaths)
-            let updRows = intersection(beforePaths, afterPaths)
- /*
-            println("new rows=\(newRows)")
-            println("old rows=\(oldRows)")
-            println("upd rows=\(updRows)")
-*/
-//            newRows = newRows.filter { !(find(insertedSections, $0.section) != nil && $0.row == 0) }
+            var afterSections: [Int] = afterPaths.map { $0.section }
             
-            self.tableView.insertRowsAtIndexPaths(newRows, withRowAnimation: .Fade)
-            self.tableView.deleteRowsAtIndexPaths(oldRows, withRowAnimation: .Fade)
-            self.tableView.reloadRowsAtIndexPaths(updRows, withRowAnimation: .Fade)
+            difference(afterSections, beforeSections).map {
+                self.tableView.insertSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
+            }
+            difference(beforeSections, afterSections).map {
+                self.tableView.deleteSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
+            }
             
+            self.tableView.insertRowsAtIndexPaths(difference(afterPaths, beforePaths), withRowAnimation: .Fade)
+            self.tableView.deleteRowsAtIndexPaths(difference(beforePaths, afterPaths), withRowAnimation: .Fade)
+            self.tableView.reloadRowsAtIndexPaths(intersection(beforePaths, afterPaths), withRowAnimation: .Fade)
             
-            // compare rows
-/*
-            while ( bi < beforePath.count && ai < afterPath.count ) {
-                let bv = beforePath[ bi ].section
-                let av = afterPath[ ai  ].section
-                println("before[\(bi)]=\(bv) after[\(ai)]=\(av)")
-                if bv < av {
-                    // a new section is added
-                    println("insert section=\(av)")
-                    self.tableView.insertSections(NSIndexSet.init(index: av), withRowAnimation: .Automatic)
-                    ai++
-                }
-                else if bv > av {
-                    // the section is deleted
-                    println("delete section=\(bv)")
-                    self.tableView.deleteSections(NSIndexSet.init(index: bv), withRowAnimation: .Automatic)
-                    bi++
-                }
-                else {
-                    println("reload section=\(bv)")
-//                    self.tableView.reloadSections(NSIndexSet.init(index: av), withRowAnimation: .Fade)
-                    ai++
-                    bi++
-                }
-            }
-
-            // compare rows
-            var bi = 0
-            var ai = 0
-            while ( bi < beforePaths.count && ai < afterPaths.count ) {
-                let (bsec, brow) = (beforePaths[ bi ].section, beforePaths[ bi ].row)
-                let (asec, arow) = (afterPaths[ ai  ].section, afterPaths[ ai  ].row)
-                let  bval = bsec * 100 + brow
-                let  aval = asec * 100 + arow
-                print("before[\(bi)]=(\(bsec), \(brow)) after[\(ai)]=(\(asec), \(arow)) ")
-                if bval < aval {
-                    // a new cell is added
-                    let indexPath = NSIndexPath.init(forRow: arow, inSection: asec)
-                    println("insert row=\(asec) \(arow)")
-                    self.tableView.insertRowsAtIndexPaths([afterPaths[ai]], withRowAnimation: .Automatic)
-                    ai++
-                }
-                else if bval > aval {
-                    // the section is deleted
-                    let indexPath = NSIndexPath.init(forRow: brow, inSection: bsec)
-                    println("delete row=\(bsec) \(brow)")
-                    self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-                    bi++
-                }
-                else {
-                    let indexPath = NSIndexPath.init(forRow: arow, inSection: asec)
-                    println("reload row=\(asec) \(arow)")
-                    self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                    ai++
-                    bi++
-                }
-            }
-
-            for (key, val) in self._keyToIndexPath {
-                if let indexPath = self.keyToIndexPath(key) {
-                    NSLog("setEditing key=%@ val=%d indexPath=(%d,%d)", key, val, indexPath.section, indexPath.row)
-                    self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                }
-            }
-*/
             self.tableView.endUpdates()
             self.configureButtons(animated: animated)
         }
@@ -287,6 +257,13 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     
     // MARK: - View controller life cycle
 
+    func configureView() {
+        if let label = self.lengthLabel {
+            let str = NSString( format: "%d", self.appData[ "length" ] as Int? ?? 0 )
+            label.text = str
+        }
+    }
+
     func configureButtons(#animated: Bool) {
         if  self.editing() {
             let addButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "exitFromEdigintMode:")
@@ -305,7 +282,10 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         for key in  [  "title", "url", "userid", "pass", "memo" ] {
             self.appData[ key ] = self.detailItem?.valueForKey( key )?.description
         }
-
+        for key in [ "length", "option" ] {
+            self.appData[ key ] = self.detailItem?.valueForKey( key )? as? Int
+        }
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -317,7 +297,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     override func viewWillAppear(animated: Bool) {
 //      self.title = self.detailItem?.valueForKey("title")?.description
-        self.title = self.appData["title"]
+        self.title = self.appData["title"] as? String
+        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -355,7 +336,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         }
         return rows + 1
     }
-
+/*
     func findSubview<T>(contentView: UIView, forClass: T) -> T? {
         let subViews = contentView.subviews.filter {$0 is T}
         if subViews.count <= 0 {
@@ -370,7 +351,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             return subViews[0] as? T
         }
     }
-
+*/
     func addTarget(control: UIControl, action: Selector, forControlEvents controlEvents: UIControlEvents) {
         var act: Selector?
         if let acts = control.actionsForTarget(self, forControlEvent: controlEvents) {
@@ -396,44 +377,83 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 case "title", "url", "userid", "pass", "memo":
                     let tag = self.keyToTag(key) ?? 0
                     // get a text field view
-                    if let tf = self.findSubview(cell.contentView, forClass: UITextField()) {
+//                    if let tf = self.findSubview(cell.contentView, forClass: UITextField()) {
+                    if let tf = (cell as? J1TextFieldCell)?.textField {
 //                      tf.text        = self.detailItem?.valueForKey(key)?.description
-                        tf.text        = self.appData[ key ]
+                        tf.text        = self.appData[ key ] as? String
                         tf.placeholder = self._keyToPlaceholder[key]
                         tf.tag = tag
                         self.addTarget(tf, action: "tapped:", forControlEvents: .EditingDidEnd)
+                        if key == "pass" {
+                            self.passField = tf
+                        }
                     }
                     
-/*
-                    var tfs = cell.contentView.subviews.filter {$0 is UITextField}
-                    if tfs.count <= 0 || tfs.count > 1 {
-                        println( "\(cell) does not contain UITextField")
-                        return
+                case "length":
+//                    if let stepper = self.findSubview(cell.contentView, forClass: UIStepper()) {
+                    if let stepper = (cell as? J1StepperCell)?.stepper {
+                        self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
+                        stepper.minimumValue = Double( 0 )
+                        stepper.maximumValue = Double( lengthArray.count - 1 )
+                        stepper.stepValue    = Double( 1 )
+                        stepper.value        = Double( 0 )
+                        stepper.continuous   = false
+                        if let len = self.appData[ "length" ] as? Int {
+                            if let i = find(  self.lengthArray, self.appData[ "length" ] as Int ) {
+                                stepper.value = Double( i )
+                            }
+                            else {
+                                self.appData[ "length" ] = lengthArray[ 0 ]
+                            }
+                        }
                     }
-                    assert(tfs[0] is UITextField, "\(tfs[0]) is not an UITextField")
-                    let tf = tfs[0] as UITextField
-
-                    // get the value and the place holder at indexPath
-//                    var text:    String? = nil
-//                    var pholder: String? = nil
-//                    if let key = self.indexPathToKey(indexPath) {
-//                        text    = self.detailItem?.valueForKey(key)?.description
-//                        pholder = self._keyToPlaceholder[key]
-//                    }
-                    
-                    tf.text        = self.detailItem?.valueForKey(key)?.description
-                    tf.placeholder = self._keyToPlaceholder[key]
-*/
+//                    if let label = self.findSubview(cell.contentView, forClass: UILabel()) {
+                    if let label = (cell as? J1StepperCell)?.label {
+                        if self.lengthLabel != nil {
+                            assert(self.lengthLabel == label, "lengthLabel is reallocated \(self.lengthLabel) \(label)")
+                        }
+                        self.lengthLabel = label
+                        let str = NSString( format: "%d", self.appData[ "length" ] as Int? ?? 0 )
+                        label.text = str
+                    }
 
                 case "picker":
-                    var pvs = cell.contentView.subviews.filter {$0 is UIPickerView}
-                    if pvs.count <= 0 || pvs.count > 1 {
-                        println( "\(cell) does not contain UIPickerView")
-                        return
+//                  var pvs = cell.contentView.subviews.filter {$0 is UIPickerView}
+//                        if pvs.count <= 0 || pvs.count > 1 {
+//                            println( "\(cell) does not contain UIPickerView")
+//                            return
+//                        }
+//                        let pv = pvs[0] as UIPickerView
+                    if var pv = (cell as? J1PcikerCell)?.picker {
+                        pv.delegate = self
+                        pv.dataSource = self
+                        pv.selectRow(self.appData[ "option"] as? Int ?? 0, inComponent: 0, animated: false)
                     }
-                    let pv = pvs[0] as UIPickerView
-                    pv.delegate = self
-                    pv.dataSource = self
+                    
+                case "generator":
+                    if var button = (cell as? J1ButtonCell)?.button {
+                        button.titleLabel?.text = "Password Generator"
+                        button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
+                        let tag = self.keyToTag(key) ?? 0
+                        button.tag = tag
+                    }
+
+                case "generated":
+                    if var tf = (cell as? J1GeneratedPassCell)?.textField {
+                        self.randomField = tf
+//                        self.appData[ "random"] = self.randgen.getRandomString((self.appData[ "length"] as Int),
+//                                    option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
+                        tf.text = self.appData[ "random" ] as? String ?? ""
+                    }
+                    
+                case "set":
+                    if var button = (cell as? J1ButtonCell)?.button {
+//                        button.titleLabel?.text = "Password Generator"
+                        button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
+                        let tag = self.keyToTag(key) ?? 0
+                        button.tag = tag
+                    }
+                    
                 default:
                     assert(true, "\(key) is exhausted")
                 }
@@ -442,7 +462,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         else {
             if let key = self.indexPathToKey(indexPath) {
 //              cell.textLabel.text = self.detailItem?.valueForKey(key)?.description
-                cell.textLabel.text = self.appData[key]
+                cell.textLabel.text = self.appData[key] as? String
             }
         }
     }
@@ -471,13 +491,17 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             case "set":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellSet", forIndexPath: indexPath) as UITableViewCell)
             case "length":
-                cell = (tableView.dequeueReusableCellWithIdentifier("CellLength", forIndexPath: indexPath) as UITableViewCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("CellLength", forIndexPath: indexPath) as J1StepperCell)
             case "char":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellCharacters", forIndexPath: indexPath) as UITableViewCell)
             case "picker":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellPicker", forIndexPath: indexPath) as UITableViewCell)
+            case "generator":
+                cell = (tableView.dequeueReusableCellWithIdentifier("Cell-button", forIndexPath: indexPath) as J1ButtonCell)
+            case "generated":
+                cell = (tableView.dequeueReusableCellWithIdentifier("Cell-" + key!, forIndexPath: indexPath) as J1GeneratedPassCell)
             default:
-                cell = (tableView.dequeueReusableCellWithIdentifier("CellEdit", forIndexPath: indexPath) as UITableViewCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("CellEdit", forIndexPath: indexPath) as J1TextFieldCell)
             }
         }
         else {
@@ -525,10 +549,44 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     */
 
     // MARK: - UIControl Event
+    func switchGenerator() {
+        self.tableView.beginUpdates()
+        
+        let befPaths: [NSIndexPath] = self._keyToIndexPath.values.array
+        let befSections: [Int] = befPaths.map { $0.section }
+        
+        self._generatorShowed = !self._generatorShowed
+        
+        let aftPaths: [NSIndexPath] = self._keyToIndexPath.values.array
+        let aftSections: [Int] = aftPaths.map { $0.section }
+        
+        difference(aftSections, befSections).map {
+            self.tableView.insertSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
+        }
+        difference(befSections, aftSections).map {
+            self.tableView.deleteSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
+        }
+        
+        self.tableView.insertRowsAtIndexPaths(difference(aftPaths, befPaths),   withRowAnimation: .Fade)
+        self.tableView.deleteRowsAtIndexPaths(difference(befPaths, aftPaths),   withRowAnimation: .Fade)
+        self.tableView.reloadRowsAtIndexPaths(intersection(befPaths, aftPaths), withRowAnimation: .Fade)
+        
+        self.tableView.endUpdates()
+        
+        if self._generatorShowed {
+            self.refreshControl = UIRefreshControl()
+            self.refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refersh")
+            self.refreshControl?.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        }
+        else {
+            self.refreshControl = nil
+        }
+    }
+    
     func tapped(sender: AnyObject){
         if let key = self.tagToKey(sender.tag) {
             switch(key) {
-            case "title", "url", "userid", "pas":
+            case "title", "url", "userid", "pass":
                 let str = (sender as UITextField).text
 //              self.detailItem?.setValue(str, forKey: key)
                 self.appData[key] = str
@@ -542,6 +600,27 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         abort()
                     }
                 })
+            case "generator":
+                var str = self.passField?.text
+                if str == nil || str == "" {
+                    str = (self.appData[ "pass" ] as? String) ?? ""
+                }
+                self.appData[ "random" ] = str
+                switchGenerator()
+                self.deferedClosure.append {
+                    self.detailItem?.setValue(self.appData[ "random" ] as String, forKey: "pass")
+                    let cdm = J1CoreDataManager.sharedInstance
+                    let context = cdm.managedObjectContext!
+                    var error: NSError? = nil
+                    if !context.save(&error) {
+                        abort()
+                    }
+                }
+                
+            case "set":
+                self.appData[ "pass" ] = self.appData[ "random" ] as? String ?? ""
+                switchGenerator()
+                
             default:
                 println("not implemented for \(key)")
             }
@@ -551,6 +630,39 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         }
     }
     
+ 
+    func valueChanged( stepper: UIStepper! ) {
+        self.appData[ "length" ] = self.lengthArray[ Int( round( stepper.value ) ) ]
+
+        self.deferedClosure.append( {
+            self.detailItem?.setValue(self.appData[ "length"], forKey: "length")
+
+            let cdm = J1CoreDataManager.sharedInstance
+            let context = cdm.managedObjectContext!
+            var error: NSError? = nil
+            if !context.save(&error) {
+                abort()
+            }
+        })
+        
+        if var tf = self.randomField {
+            self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
+                option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
+            tf.text = self.appData[ "random" ] as String
+        }
+//            self.makeRandom()
+    }
+
+    func refresh(sender:AnyObject)
+    {
+        if var tf = self.randomField {
+            self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
+                option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
+            tf.text = self.appData[ "random" ] as String
+        }
+        self.refreshControl!.endRefreshing()
+//        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
+    }
 
     // MARK: - Navigation
 
@@ -573,7 +685,27 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        println("picker view selected")
+//        println("picker view selected")
+        self.appData[ "option" ] = pickerView.selectedRowInComponent(0)
+
+        var key = "option"
+        self.deferedClosure.append( {
+            self.detailItem?.setValue(self.appData[ key ], forKey: key)
+            
+            let cdm = J1CoreDataManager.sharedInstance
+            let context = cdm.managedObjectContext!
+            var error: NSError? = nil
+            if !context.save(&error) {
+                abort()
+            }
+        })
+
+        if var tf = self.randomField {
+          self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
+            option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
+          tf.text = self.appData[ "random" ] as String
+        }
+
 //        var random: J1RandomEntry = self.detailItem as J1RandomEntry
 //        random.option = J1RandomOption(rawValue: row )!
  //       self.detailItem = random;

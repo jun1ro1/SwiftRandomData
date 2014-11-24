@@ -87,8 +87,10 @@ difference(h2.keys.array, h1.keys.array)
 intersection(h1.keys.array, h2.keys.array+["xz","yz"])
 intersection(h2.keys.array, h1.keys.array)
 
-var hhh = [ "title": "Apple", "url": "http://www.apple.com/"]
-hhh +[ "userid": "user"]
+var hhh = [ "title": "Apple", "url": "http://www.apple.com/", "length": 10]
+hhh[ "length"]
+
+
 
 
 

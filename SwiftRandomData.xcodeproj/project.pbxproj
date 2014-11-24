@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		F91EFEED19E1539500112153 /* SiteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91EFEEC19E1539500112153 /* SiteViewController.swift */; };
 		F957E8F319C6FBAB00A4BA46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F219C6FBAB00A4BA46 /* AppDelegate.swift */; };
-		F957E8F619C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */; };
 		F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F719C6FBAB00A4BA46 /* MasterViewController.swift */; };
 		F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */; };
 		F957E8FD19C6FBAB00A4BA46 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F957E8FB19C6FBAB00A4BA46 /* Main.storyboard */; };
@@ -19,10 +18,11 @@
 		F957E91819C6FC1600A4BA46 /* Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E91719C6FC1600A4BA46 /* Bytes.swift */; };
 		F957E91A19C6FD0B00A4BA46 /* J1RandomData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E91919C6FD0B00A4BA46 /* J1RandomData.swift */; };
 		F957E91F19C7018A00A4BA46 /* Password.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E91E19C7018A00A4BA46 /* Password.swift */; };
-		F957E92119C7018A00A4BA46 /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E92019C7018A00A4BA46 /* Site.swift */; };
 		F957E92319C702AD00A4BA46 /* J1CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E92219C702AD00A4BA46 /* J1CoreDataManager.swift */; };
 		F957E92519C7197C00A4BA46 /* J1SiteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E92419C7197C00A4BA46 /* J1SiteManager.swift */; };
 		F957E92719C721ED00A4BA46 /* SiteEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E92619C721ED00A4BA46 /* SiteEditViewController.swift */; };
+		F98FC4D11A178C2B0038E131 /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98FC4D01A178C2B0038E131 /* Site.swift */; };
+		F98FC4D61A17D4DB0038E131 /* SwiftRandomData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,11 +52,12 @@
 		F957E91719C6FC1600A4BA46 /* Bytes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bytes.swift; sourceTree = "<group>"; };
 		F957E91919C6FD0B00A4BA46 /* J1RandomData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1RandomData.swift; sourceTree = "<group>"; };
 		F957E91E19C7018A00A4BA46 /* Password.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Password.swift; sourceTree = "<group>"; };
-		F957E92019C7018A00A4BA46 /* Site.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
 		F957E92219C702AD00A4BA46 /* J1CoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1CoreDataManager.swift; sourceTree = "<group>"; };
 		F957E92419C7197C00A4BA46 /* J1SiteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1SiteManager.swift; sourceTree = "<group>"; };
 		F957E92619C721ED00A4BA46 /* SiteEditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiteEditViewController.swift; sourceTree = "<group>"; };
+		F98FC4D01A178C2B0038E131 /* Site.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
 		F9EF29A719DDB704001D9509 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		F9EF76BC1A18A94700912789 /* SwiftRandomData 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 2.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +99,9 @@
 		F957E8EF19C6FBAB00A4BA46 /* SwiftRandomData */ = {
 			isa = PBXGroup;
 			children = (
+				F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */,
+				F957E92619C721ED00A4BA46 /* SiteEditViewController.swift */,
+				F98FC4D01A178C2B0038E131 /* Site.swift */,
 				F957E8F219C6FBAB00A4BA46 /* AppDelegate.swift */,
 				F957E91719C6FC1600A4BA46 /* Bytes.swift */,
 				F957E8F719C6FBAB00A4BA46 /* MasterViewController.swift */,
@@ -106,15 +110,12 @@
 				F957E91919C6FD0B00A4BA46 /* J1RandomData.swift */,
 				F957E92419C7197C00A4BA46 /* J1SiteManager.swift */,
 				F957E91E19C7018A00A4BA46 /* Password.swift */,
-				F957E92019C7018A00A4BA46 /* Site.swift */,
 				F957E8FE19C6FBAB00A4BA46 /* Images.xcassets */,
 				F957E90019C6FBAB00A4BA46 /* LaunchScreen.xib */,
 				F957E8FB19C6FBAB00A4BA46 /* Main.storyboard */,
 				F957E8F019C6FBAB00A4BA46 /* Supporting Files */,
 				F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */,
 				F9EF29A719DDB704001D9509 /* MyPlayground.playground */,
-				F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */,
-				F957E92619C721ED00A4BA46 /* SiteEditViewController.swift */,
 			);
 			path = SwiftRandomData;
 			sourceTree = "<group>";
@@ -244,17 +245,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F957E8F619C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld in Sources */,
 				F957E8F319C6FBAB00A4BA46 /* AppDelegate.swift in Sources */,
 				F957E91819C6FC1600A4BA46 /* Bytes.swift in Sources */,
 				F957E92719C721ED00A4BA46 /* SiteEditViewController.swift in Sources */,
 				F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */,
-				F957E92119C7018A00A4BA46 /* Site.swift in Sources */,
 				F957E92519C7197C00A4BA46 /* J1SiteManager.swift in Sources */,
 				F957E91F19C7018A00A4BA46 /* Password.swift in Sources */,
 				F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */,
 				F957E91A19C6FD0B00A4BA46 /* J1RandomData.swift in Sources */,
+				F98FC4D61A17D4DB0038E131 /* SwiftRandomData.xcdatamodeld in Sources */,
 				F957E92319C702AD00A4BA46 /* J1CoreDataManager.swift in Sources */,
+				F98FC4D11A178C2B0038E131 /* Site.swift in Sources */,
 				F91EFEED19E1539500112153 /* SiteViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -466,9 +467,10 @@
 		F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F9EF76BC1A18A94700912789 /* SwiftRandomData 2.xcdatamodel */,
 				F957E8F519C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodel */,
 			);
-			currentVersion = F957E8F519C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodel */;
+			currentVersion = F9EF76BC1A18A94700912789 /* SwiftRandomData 2.xcdatamodel */;
 			path = SwiftRandomData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

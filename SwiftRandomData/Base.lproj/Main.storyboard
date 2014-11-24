@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="rS3-R9-Ivy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="rS3-R9-Ivy">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -96,7 +96,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellEdit" id="6ef-Gx-rjG">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellEdit" id="6ef-Gx-rjG" customClass="J1TextFieldCell" customModule="SwiftRandomData" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6ef-Gx-rjG" id="K3w-Cf-mPb">
@@ -114,8 +114,11 @@
                                         <constraint firstItem="lQn-eW-Lyi" firstAttribute="centerX" secondItem="K3w-Cf-mPb" secondAttribute="centerX" id="azc-e5-6j7"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="textField" destination="lQn-eW-Lyi" id="p2F-q2-jFA"/>
+                                </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellSet" id="Xyz-Mg-71Y">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellSet" id="Xyz-Mg-71Y" customClass="J1ButtonCell" customModule="SwiftRandomData" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xyz-Mg-71Y" id="trm-Dr-ux4">
@@ -133,8 +136,11 @@
                                         <constraint firstAttribute="centerX" secondItem="9vZ-w3-NrX" secondAttribute="centerX" id="tuL-Bd-s4s"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="button" destination="9vZ-w3-NrX" id="ce5-vf-vCR"/>
+                                </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellLength" id="5C6-go-zjO">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellLength" id="5C6-go-zjO" customClass="J1StepperCell" customModule="SwiftRandomData" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5C6-go-zjO" id="DJt-Ed-07b">
@@ -169,39 +175,36 @@
                                         <constraint firstAttribute="centerY" secondItem="2FN-dX-nJ4" secondAttribute="centerY" id="z9d-Sj-aKf"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="label" destination="mqx-Qp-D49" id="5U8-n6-4Pm"/>
+                                    <outlet property="stepper" destination="cjC-U3-s8K" id="zKf-HM-w3h"/>
+                                </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellCharacters" id="Z4K-xb-8mr">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell-generated" id="Z4K-xb-8mr" customClass="J1GeneratedPassCell" customModule="SwiftRandomData" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Z4K-xb-8mr" id="EMH-mT-oB4">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Characters:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fMk-Ow-A8j">
-                                            <rect key="frame" x="20" y="11" width="92" height="21"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c6X-eA-Wig">
-                                            <rect key="frame" x="518" y="11" width="62" height="21"/>
+                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PvR-cq-9gH">
+                                            <rect key="frame" x="150" y="7" width="300" height="30"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="62" id="HqN-vE-bf5"/>
+                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="bFS-l4-cDe"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                        </textField>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="c6X-eA-Wig" firstAttribute="baseline" secondItem="fMk-Ow-A8j" secondAttribute="baseline" id="ZDS-EX-cgA"/>
-                                        <constraint firstItem="fMk-Ow-A8j" firstAttribute="leading" secondItem="EMH-mT-oB4" secondAttribute="leading" constant="20" symbolic="YES" id="e6U-vG-TCR"/>
-                                        <constraint firstAttribute="centerY" secondItem="fMk-Ow-A8j" secondAttribute="centerY" id="kFy-P3-Uw7"/>
-                                        <constraint firstAttribute="centerY" secondItem="c6X-eA-Wig" secondAttribute="centerY" id="nxa-NW-3Cq"/>
-                                        <constraint firstAttribute="trailing" secondItem="c6X-eA-Wig" secondAttribute="trailing" constant="20" symbolic="YES" id="xtV-hZ-s0N"/>
+                                        <constraint firstAttribute="centerY" secondItem="PvR-cq-9gH" secondAttribute="centerY" id="KVt-Ui-bfa"/>
+                                        <constraint firstAttribute="centerX" secondItem="PvR-cq-9gH" secondAttribute="centerX" id="VGi-6U-yHm"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="textField" destination="PvR-cq-9gH" id="cwm-1M-ws9"/>
+                                </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellPicker" rowHeight="169" id="6Db-qM-Trs">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellPicker" rowHeight="169" id="6Db-qM-Trs" customClass="J1PcikerCell" customModule="SwiftRandomData" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6Db-qM-Trs" id="ggS-lv-9mk">
@@ -217,6 +220,31 @@
                                         <constraint firstItem="gkD-xJ-L3o" firstAttribute="centerY" secondItem="ggS-lv-9mk" secondAttribute="centerY" id="NMJ-iO-30H"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="picker" destination="gkD-xJ-L3o" id="Uqx-ql-hIs"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell-button" id="uur-Qk-Zta" customClass="J1ButtonCell" customModule="SwiftRandomData" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uur-Qk-Zta" id="Bwy-Oi-lp9">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p3Y-eA-tOu">
+                                            <rect key="frame" x="230" y="7" width="141" height="30"/>
+                                            <state key="normal" title="Password Generator">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="centerX" secondItem="p3Y-eA-tOu" secondAttribute="centerX" id="OAm-Qw-f2M"/>
+                                        <constraint firstAttribute="centerY" secondItem="p3Y-eA-tOu" secondAttribute="centerY" id="Uh8-lu-VdF"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="button" destination="p3Y-eA-tOu" id="9kX-Qh-87T"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                     </tableView>
@@ -224,7 +252,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lrm-kH-fPn" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1343" y="40"/>
+            <point key="canvasLocation" x="1343" y="37"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
