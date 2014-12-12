@@ -55,6 +55,9 @@ class J1ButtonCell: UITableViewCell {
 
 class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
+    // MARK: - Managers
+    var passManager: PassManager   = PassManager.sharedManager()
+
     // MARK: - Properties
     
     var detailItem: NSManagedObject?
@@ -305,6 +308,14 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         for closure in self.deferedClosure {
             closure()
         }
+        if self.deferedClosure.count > 0 {
+            let cdm = J1CoreDataManager.sharedInstance
+            let context = cdm.managedObjectContext!
+            var error: NSError? = nil
+            if !context.save(&error) {
+                abort()
+            }
+        }
         self.deferedClosure = Array<()->Void>()
     }
     
@@ -462,7 +473,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         else {
             if let key = self.indexPathToKey(indexPath) {
 //              cell.textLabel.text = self.detailItem?.valueForKey(key)?.description
-                cell.textLabel.text = self.appData[key] as? String
+                cell.textLabel?.text = self.appData[key] as? String
             }
         }
     }
@@ -548,6 +559,24 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     }
     */
 
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let key: String? = self.indexPathToKey(indexPath)
+        switch key! {
+        case "url":
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            let cell = tableView.cellForRowAtIndexPath(indexPath)
+            if let str = cell?.textLabel?.text {
+                if let url = NSURL(string: str) {
+                    if UIApplication.sharedApplication().canOpenURL(url) {
+                        UIApplication.sharedApplication().openURL(url)
+                    }
+                }
+            }
+        default:
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
     // MARK: - UIControl Event
     func switchGenerator() {
         self.tableView.beginUpdates()
@@ -586,20 +615,22 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     func tapped(sender: AnyObject){
         if let key = self.tagToKey(sender.tag) {
             switch(key) {
-            case "title", "url", "userid", "pass":
+            case "title", "url", "userid":
                 let str = (sender as UITextField).text
-//              self.detailItem?.setValue(str, forKey: key)
                 self.appData[key] = str
+                self.deferedClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
                 
-                self.deferedClosure.append( {
-                    self.detailItem?.setValue(str, forKey: key)
-                    let cdm = J1CoreDataManager.sharedInstance
-                    let context = cdm.managedObjectContext!
-                    var error: NSError? = nil
-                    if !context.save(&error) {
-                        abort()
-                    }
-                })
+            case "pass":
+                let str = (sender as UITextField).text
+                self.appData[key] = str
+
+                var pass = self.passManager.create(self.detailItem as? Site)
+                pass.pass   = self.appData["pass"] as String
+                pass.site   = self.detailItem? as? Site
+                self.passManager.select(pass, site: self.detailItem? as Site)
+                
+                self.deferedClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
+
             case "generator":
                 var str = self.passField?.text
                 if str == nil || str == "" {
@@ -608,17 +639,17 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 self.appData[ "random" ] = str
                 switchGenerator()
                 self.deferedClosure.append {
-                    self.detailItem?.setValue(self.appData[ "random" ] as String, forKey: "pass")
-                    let cdm = J1CoreDataManager.sharedInstance
-                    let context = cdm.managedObjectContext!
-                    var error: NSError? = nil
-                    if !context.save(&error) {
-                        abort()
-                    }
+                    var i=0; self.detailItem?.setValue(self.appData[ "random" ] as String, forKey: "pass")
                 }
                 
             case "set":
                 self.appData[ "pass" ] = self.appData[ "random" ] as? String ?? ""
+                if key == "set" {
+                    var pass = self.passManager.create(self.detailItem as? Site)
+                    pass.pass   = self.appData["pass"] as String
+                    pass.site   = self.detailItem? as? Site
+                    self.passManager.select(pass, site: self.detailItem? as Site)
+                }
                 switchGenerator()
                 
             default:
@@ -635,14 +666,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         self.appData[ "length" ] = self.lengthArray[ Int( round( stepper.value ) ) ]
 
         self.deferedClosure.append( {
-            self.detailItem?.setValue(self.appData[ "length"], forKey: "length")
-
-            let cdm = J1CoreDataManager.sharedInstance
-            let context = cdm.managedObjectContext!
-            var error: NSError? = nil
-            if !context.save(&error) {
-                abort()
-            }
+           var i=0;  self.detailItem?.setValue(self.appData[ "length"], forKey: "length")
         })
         
         if var tf = self.randomField {
@@ -670,8 +694,17 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
+        
+        if segue.identifier == "ShowPass" {
+            (segue.destinationViewController as PassViewController).context = self.detailItem
+        }
+        
     }
-
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
+        return true
+    }
+    
     // MARK: - Picker View Delegate
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return 1
@@ -690,14 +723,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
         var key = "option"
         self.deferedClosure.append( {
-            self.detailItem?.setValue(self.appData[ key ], forKey: key)
-            
-            let cdm = J1CoreDataManager.sharedInstance
-            let context = cdm.managedObjectContext!
-            var error: NSError? = nil
-            if !context.save(&error) {
-                abort()
-            }
+           var i=0;  self.detailItem?.setValue(self.appData[ key ], forKey: key)
         })
 
         if var tf = self.randomField {

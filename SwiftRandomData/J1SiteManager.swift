@@ -9,15 +9,15 @@
 import Foundation
 import CoreData
 
-var sManager: J1SiteManager? = nil
+var sJ1SiteManager: J1SiteManager? = nil
 
 class J1SiteManager {
 
     class func sharedManager()->J1SiteManager {
-        if sManager == nil {
-            sManager = J1SiteManager()
+        if sJ1SiteManager == nil {
+            sJ1SiteManager = J1SiteManager()
         }
-        return sManager!
+        return sJ1SiteManager!
     }
     
     func insertNewObject(sender: AnyObject) {

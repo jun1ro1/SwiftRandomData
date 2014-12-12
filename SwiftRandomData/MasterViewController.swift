@@ -9,10 +9,16 @@
 import UIKit
 import CoreData
 
+class MasterViewCell: UITableViewCell {
+    @IBOutlet var title: UILabel?
+    @IBOutlet var url: UILabel?
+    @IBOutlet var openButton: UIButton?
+}
+
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
     var managedObjectContext: NSManagedObjectContext? = nil
-    var siteManager:          J1SiteManager? = nil
+    var siteManager:          J1SiteManager = J1SiteManager.sharedManager()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,7 +29,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Do any additional setup after loading the view, typically from a nib.
         
         self.managedObjectContext = J1CoreDataManager.sharedInstance.managedObjectContext
-        self.siteManager = J1SiteManager.sharedManager()
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
@@ -43,6 +48,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 */
         
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        if let indexPath = self.tableView.indexPathForSelectedRow() {
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -51,12 +62,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
 
     // MARK: - Segues
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
+        return true
+    }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowSite" {
-            if let indexPath = self.tableView.indexPathForSelectedRow() {
-            let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject
-            (segue.destinationViewController as SiteViewController).detailItem = object
+            // http://stackoverflow.com/questions/9339302/indexpath-for-segue-from-accessorybutton
+            if let indexPath = self.tableView.indexPathForCell(sender as UITableViewCell) {
+                let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject
+                (segue.destinationViewController as SiteViewController).detailItem = object
             }
         }
         else if segue.identifier == "EditSite" {
@@ -81,7 +97,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as MasterViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
     }
@@ -105,16 +121,77 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         }
     }
+/*
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+
+        if let obj = self.fetchedResultsController.objectAtIndexPath(indexPath) as? NSManagedObject {
+            let urlstr = obj.valueForKey("url") as String
+            if let url = NSURL(string: urlstr) {
+                if UIApplication.sharedApplication().canOpenURL(url) {
+                    UIApplication.sharedApplication().openURL(url)
+                }
+            }
+        }
+    }
+*/
+/*
+    override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        self.performSegueWithIdentifier("ShowSite", sender: cell)
+    }
+*/
 
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
         let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject
-        if let title = object.valueForKey("title")?.description {
-          cell.textLabel.text = title
+        
+        if let mcell = cell as? MasterViewCell {
+            if let title = object.valueForKey("title")?.description {
+                mcell.title?.text = title
+            }
+            if let url = object.valueForKey("url")?.description {
+                mcell.url?.text = url
+            }
+            mcell.openButton?.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
+       }
+    }
+    
+    func addTarget(control: UIControl, action: Selector, forControlEvents controlEvents: UIControlEvents) {
+        var act: Selector?
+        if let acts = control.actionsForTarget(self, forControlEvent: controlEvents) {
+            for a in acts {
+                if action == Selector(a as String) {
+                    act = Selector(a as String)
+                }
+            }
         }
-        if let url = object.valueForKey("url")?.description {
-          cell.detailTextLabel?.text = url
+        if act == nil {
+            control.addTarget(self, action: action, forControlEvents: controlEvents)
+        }
+        else {
+            println("\(action.description) is already added for event \(controlEvents) in \(control)")
+        }
+        
+    }
+
+    func tapped(sender: AnyObject){
+        if let button = sender as? UIButton {
+            var v: UIView? = button
+            do {
+                v = v?.superview
+            } while ( v != nil && !(v is UITableViewCell) )
+            
+            if let vv = v as? MasterViewCell {
+                if let urlstr = vv.url?.text {
+                    if let url = NSURL(string: urlstr) {
+//                        if UIApplication.sharedApplication().canOpenURL(url) {
+                            UIApplication.sharedApplication().openURL(url)
+//                        }
+                    }
+                }
+            }
         }
     }
+    
     
     // MARK: - Fetched results controller
 
@@ -132,7 +209,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             fetchRequest.fetchBatchSize = 20
             
             // Edit the sort key as appropriate.
-            let sortDescriptor = NSSortDescriptor(key: "title", ascending: false)
+            let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
             let sortDescriptors = [sortDescriptor]
             
             fetchRequest.sortDescriptors = [sortDescriptor]
@@ -153,7 +230,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             return _fetchedResultsController!
     }
-    var _fetchedResultsController: NSFetchedResultsController? = nil
+    private var _fetchedResultsController: NSFetchedResultsController? = nil
 
 
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
