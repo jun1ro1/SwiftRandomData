@@ -11,9 +11,11 @@ import CoreData
 
 class PassViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
-    var context: AnyObject?
+    var context: Site?
     
     var _managedObjectContext: NSManagedObjectContext? = nil
+    
+    var selected: Password? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +27,8 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
+        self.selected = self.context!.selecting
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -39,6 +43,23 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
             abort()
         }
 */
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+    /*
+        if let pass = self.selected {
+            self.passManager.select(pass, site: self.context!)
+        }
+        if let moc = self._managedObjectContext {
+            if moc.hasChanges {
+                var error: NSError? = nil
+                if !moc.save(&error) {
+                    abort()
+                }
+            }
+        }
+    */
     }
     
     var passManager = PassManager.sharedManager()
@@ -65,10 +86,10 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
     }
 
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
-        let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as Password
-        cell.textLabel?.text = object.pass
-        cell.detailTextLabel?.text = (object.createdAt as NSDate).descriptionWithLocale(nil)
-        cell.accessoryType = object.selected as Bool ? .Checkmark : .None
+        let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as Password
+        cell.textLabel?.text = pass.pass
+        cell.detailTextLabel?.text = (pass.createdAt as NSDate).descriptionWithLocale(nil)
+        cell.accessoryType = ( pass == self.selected ) ? .Checkmark : .None
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -78,6 +99,33 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         return cell
     }
 
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+
+        let oldIndexPath = self.fetchedResultsController.indexPathForObject(self.selected!)!
+        let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as Password
+        
+        self.selected = pass
+//        self.context!.selecting = pass
+        
+        tableView.beginUpdates()
+        tableView.reloadRowsAtIndexPaths([indexPath, oldIndexPath], withRowAnimation: .Automatic)
+        tableView.endUpdates()
+        
+        self.passManager.select(pass, site: self.context!)
+
+        if let moc = self._managedObjectContext {
+            if moc.hasChanges {
+                var error: NSError? = nil
+                if !moc.save(&error) {
+                    abort()
+                }
+            }
+        }
+
+      
+        self.performSegueWithIdentifier("UnwindToSiteView", sender: self)
+    }
     /*
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -146,7 +194,7 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         // Predicate
-        let predicate = NSPredicate(format: "%K = %@", argumentArray: [ "site", self.context as Site])
+        let predicate = NSPredicate(format: "%K = %@", argumentArray: [ "site", self.context!])
         fetchRequest.predicate = predicate
         
         // Edit the section name key path and cache name if appropriate.

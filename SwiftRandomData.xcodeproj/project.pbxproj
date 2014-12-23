@@ -8,10 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F91EFEED19E1539500112153 /* SiteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91EFEEC19E1539500112153 /* SiteViewController.swift */; };
-		F92242D31A3446BD00EDD235 /* Password.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92242D21A3446BD00EDD235 /* Password.swift */; };
-		F92242D41A3446BD00EDD235 /* Password.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92242D21A3446BD00EDD235 /* Password.swift */; };
-		F92242D61A3446BE00EDD235 /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92242D51A3446BE00EDD235 /* Site.swift */; };
-		F92242D71A3446BE00EDD235 /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92242D51A3446BE00EDD235 /* Site.swift */; };
 		F957E8F319C6FBAB00A4BA46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F219C6FBAB00A4BA46 /* AppDelegate.swift */; };
 		F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F719C6FBAB00A4BA46 /* MasterViewController.swift */; };
 		F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */; };
@@ -23,6 +19,10 @@
 		F957E91A19C6FD0B00A4BA46 /* J1RandomData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E91919C6FD0B00A4BA46 /* J1RandomData.swift */; };
 		F957E92319C702AD00A4BA46 /* J1CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E92219C702AD00A4BA46 /* J1CoreDataManager.swift */; };
 		F957E92519C7197C00A4BA46 /* J1SiteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E92419C7197C00A4BA46 /* J1SiteManager.swift */; };
+		F95AA3891A41D29100C08417 /* Password.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95AA3881A41D29100C08417 /* Password.swift */; };
+		F95AA38A1A41D29100C08417 /* Password.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95AA3881A41D29100C08417 /* Password.swift */; };
+		F95AA38C1A41D29200C08417 /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95AA38B1A41D29200C08417 /* Site.swift */; };
+		F95AA38D1A41D29200C08417 /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95AA38B1A41D29200C08417 /* Site.swift */; };
 		F98FC4D61A17D4DB0038E131 /* SwiftRandomData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */; };
 		F99DD0B41A2366440046B1C0 /* PassManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99DD0B31A2366440046B1C0 /* PassManager.swift */; };
 		F99DD0BB1A237B000046B1C0 /* PassViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99DD0BA1A237B000046B1C0 /* PassViewController.swift */; };
@@ -40,8 +40,6 @@
 
 /* Begin PBXFileReference section */
 		F91EFEEC19E1539500112153 /* SiteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiteViewController.swift; sourceTree = "<group>"; };
-		F92242D21A3446BD00EDD235 /* Password.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Password.swift; sourceTree = "<group>"; };
-		F92242D51A3446BE00EDD235 /* Site.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
 		F9490E151A2B5834001C860C /* SwiftRandomData 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 4.xcdatamodel"; sourceTree = "<group>"; };
 		F957E8ED19C6FBAB00A4BA46 /* SwiftRandomData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftRandomData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F957E8F119C6FBAB00A4BA46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -59,6 +57,9 @@
 		F957E91919C6FD0B00A4BA46 /* J1RandomData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1RandomData.swift; sourceTree = "<group>"; };
 		F957E92219C702AD00A4BA46 /* J1CoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1CoreDataManager.swift; sourceTree = "<group>"; };
 		F957E92419C7197C00A4BA46 /* J1SiteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1SiteManager.swift; sourceTree = "<group>"; };
+		F95AA3871A41D03F00C08417 /* SwiftRandomData 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 6.xcdatamodel"; sourceTree = "<group>"; };
+		F95AA3881A41D29100C08417 /* Password.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Password.swift; sourceTree = "<group>"; };
+		F95AA38B1A41D29200C08417 /* Site.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
 		F99DD0B31A2366440046B1C0 /* PassManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassManager.swift; sourceTree = "<group>"; };
 		F99DD0B51A2367D30046B1C0 /* SwiftRandomData 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 3.xcdatamodel"; sourceTree = "<group>"; };
 		F99DD0BA1A237B000046B1C0 /* PassViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassViewController.swift; sourceTree = "<group>"; };
@@ -88,8 +89,8 @@
 		F957E8E419C6FBAB00A4BA46 = {
 			isa = PBXGroup;
 			children = (
-				F92242D51A3446BE00EDD235 /* Site.swift */,
-				F92242D21A3446BD00EDD235 /* Password.swift */,
+				F95AA38B1A41D29200C08417 /* Site.swift */,
+				F95AA3881A41D29100C08417 /* Password.swift */,
 				F957E8EF19C6FBAB00A4BA46 /* SwiftRandomData */,
 				F957E90A19C6FBAB00A4BA46 /* SwiftRandomDataTests */,
 				F957E8EE19C6FBAB00A4BA46 /* Products */,
@@ -253,13 +254,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F92242D31A3446BD00EDD235 /* Password.swift in Sources */,
+				F95AA3891A41D29100C08417 /* Password.swift in Sources */,
 				F957E8F319C6FBAB00A4BA46 /* AppDelegate.swift in Sources */,
 				F957E91819C6FC1600A4BA46 /* Bytes.swift in Sources */,
 				F99DD0B41A2366440046B1C0 /* PassManager.swift in Sources */,
 				F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */,
 				F957E92519C7197C00A4BA46 /* J1SiteManager.swift in Sources */,
-				F92242D61A3446BE00EDD235 /* Site.swift in Sources */,
+				F95AA38C1A41D29200C08417 /* Site.swift in Sources */,
 				F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */,
 				F957E91A19C6FD0B00A4BA46 /* J1RandomData.swift in Sources */,
 				F98FC4D61A17D4DB0038E131 /* SwiftRandomData.xcdatamodeld in Sources */,
@@ -273,8 +274,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F92242D41A3446BD00EDD235 /* Password.swift in Sources */,
-				F92242D71A3446BE00EDD235 /* Site.swift in Sources */,
+				F95AA38A1A41D29100C08417 /* Password.swift in Sources */,
+				F95AA38D1A41D29200C08417 /* Site.swift in Sources */,
 				F957E90E19C6FBAB00A4BA46 /* SwiftRandomDataTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -478,13 +479,14 @@
 		F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F95AA3871A41D03F00C08417 /* SwiftRandomData 6.xcdatamodel */,
 				F9C45D0A1A34420400B62130 /* SwiftRandomData 5.xcdatamodel */,
 				F9490E151A2B5834001C860C /* SwiftRandomData 4.xcdatamodel */,
 				F9EF76BC1A18A94700912789 /* SwiftRandomData 2.xcdatamodel */,
 				F99DD0B51A2367D30046B1C0 /* SwiftRandomData 3.xcdatamodel */,
 				F957E8F519C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodel */,
 			);
-			currentVersion = F9C45D0A1A34420400B62130 /* SwiftRandomData 5.xcdatamodel */;
+			currentVersion = F95AA3871A41D03F00C08417 /* SwiftRandomData 6.xcdatamodel */;
 			path = SwiftRandomData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

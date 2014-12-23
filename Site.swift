@@ -2,7 +2,7 @@
 //  Site.swift
 //  SwiftRandomData
 //
-//  Created by OKU Junichirou on 2014/12/07.
+//  Created by OKU Junichirou on 2014/12/18.
 //  Copyright (c) 2014年 OKU Junichirou. All rights reserved.
 //
 
@@ -13,17 +13,20 @@ import CoreData
 
 class Site: NSManagedObject {
 
+    @NSManaged var active: NSNumber
     @NSManaged var createdAt: NSDate
     @NSManaged var length: NSNumber
+    @NSManaged var loginAt: NSDate
     @NSManaged var memo: String
     @NSManaged var option: NSNumber
     @NSManaged var pass: String
     @NSManaged var title: String
     @NSManaged var url: String
     @NSManaged var userid: String
-    @NSManaged var active: NSNumber
-    @NSManaged var loginAt: NSDate
+    @NSManaged var selectAt: NSDate
+    @NSManaged var uuid: String
     @NSManaged var passwords: NSSet
+    @NSManaged var selecting: Password
 
 }
 
@@ -42,3 +45,5 @@ extension Site {
         }
     }
 }
+
+

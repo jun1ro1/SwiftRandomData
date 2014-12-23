@@ -60,12 +60,25 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     // MARK: - Properties
     
-    var detailItem: NSManagedObject?
-    var deferedClosure = Array<()->Void>()
+    var detailItem: NSManagedObject? = nil {
+        didSet {
+            for key in  [  "title", "url", "userid", "pass", "memo" ] {
+                self.appData[ key ] = self.detailItem?.valueForKey( key )?.description
+            }
+            for key in [ "length", "option" ] {
+                self.appData[ key ] = self.detailItem?.valueForKey( key )? as? Int
+            }
+ //           self.tableView.reloadData()
+        }
+    }
+    
+    var deferredClosure = Array<()->Void>()
+    var deferredClosure2 = Array<()->Void>()
     
     var appData: [String: AnyObject] = [String: AnyObject](){
         didSet {
-            self.configureView()
+//            self.configureView()
+            self.tableView.reloadData()
         }
     }
     
@@ -299,16 +312,29 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     }
 
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
 //      self.title = self.detailItem?.valueForKey("title")?.description
         self.title = self.appData["title"] as? String
         self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
     }
     
-    override func viewDidDisappear(animated: Bool) {
-        for closure in self.deferedClosure {
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        for closure in self.deferredClosure2 {
             closure()
         }
-        if self.deferedClosure.count > 0 {
+        self.deferredClosure2 = Array<()->Void>()
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        for closure in self.deferredClosure {
+            closure()
+        }
+        if self.deferredClosure.count > 0 {
             let cdm = J1CoreDataManager.sharedInstance
             let context = cdm.managedObjectContext!
             var error: NSError? = nil
@@ -316,7 +342,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 abort()
             }
         }
-        self.deferedClosure = Array<()->Void>()
+        self.deferredClosure = Array<()->Void>()
     }
     
     override func didReceiveMemoryWarning() {
@@ -618,7 +644,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             case "title", "url", "userid":
                 let str = (sender as UITextField).text
                 self.appData[key] = str
-                self.deferedClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
+                self.deferredClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
                 
             case "pass":
                 let str = (sender as UITextField).text
@@ -626,10 +652,10 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
                 var pass = self.passManager.create(self.detailItem as? Site)
                 pass.pass   = self.appData["pass"] as String
-                pass.site   = self.detailItem? as? Site
+                pass.site   = self.detailItem as Site
                 self.passManager.select(pass, site: self.detailItem? as Site)
                 
-                self.deferedClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
+                self.deferredClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
 
             case "generator":
                 var str = self.passField?.text
@@ -638,7 +664,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 }
                 self.appData[ "random" ] = str
                 switchGenerator()
-                self.deferedClosure.append {
+                self.deferredClosure.append {
                     var i=0; self.detailItem?.setValue(self.appData[ "random" ] as String, forKey: "pass")
                 }
                 
@@ -647,7 +673,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 if key == "set" {
                     var pass = self.passManager.create(self.detailItem as? Site)
                     pass.pass   = self.appData["pass"] as String
-                    pass.site   = self.detailItem? as? Site
+                    pass.site   = self.detailItem as Site
                     self.passManager.select(pass, site: self.detailItem? as Site)
                 }
                 switchGenerator()
@@ -665,7 +691,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     func valueChanged( stepper: UIStepper! ) {
         self.appData[ "length" ] = self.lengthArray[ Int( round( stepper.value ) ) ]
 
-        self.deferedClosure.append( {
+        self.deferredClosure.append( {
            var i=0;  self.detailItem?.setValue(self.appData[ "length"], forKey: "length")
         })
         
@@ -696,13 +722,27 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         // Pass the selected object to the new view controller.
         
         if segue.identifier == "ShowPass" {
-            (segue.destinationViewController as PassViewController).context = self.detailItem
+            (segue.destinationViewController as PassViewController).context = self.detailItem as Site
         }
         
     }
     
     override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
         return true
+    }
+    
+    @IBAction func unwindToSiteView(segue: UIStoryboardSegue) {
+        if let pvc: PassViewController = segue.sourceViewController as? PassViewController {
+            let str = pvc.context!.selecting.pass
+            self.deferredClosure2.append {
+                self.detailItem?.setValue(str, forKey: "pass")
+                self.appData[ "pass" ] = str
+                self.tableView.reloadData()
+//                if let indexPath = self.tableView.indexPathForSelectedRow() {
+//                    self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+//                }
+            }
+        }
     }
     
     // MARK: - Picker View Delegate
@@ -722,7 +762,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         self.appData[ "option" ] = pickerView.selectedRowInComponent(0)
 
         var key = "option"
-        self.deferedClosure.append( {
+        self.deferredClosure.append( {
            var i=0;  self.detailItem?.setValue(self.appData[ key ], forKey: key)
         })
 

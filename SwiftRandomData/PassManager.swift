@@ -32,11 +32,11 @@ class PassManager {
         let obj
             = NSEntityDescription.insertNewObjectForEntityForName(ENTITY_PASS, inManagedObjectContext: context)
                 as Password
-        obj.active = true
-        obj.selected = false
-        obj.createdAt = NSDate()
+        obj.setPrimitiveValue(true ,    forKey: "active")
+        obj.setPrimitiveValue(NSDate(), forKey: "createdAt")
         if site != nil {
             obj.site = site!
+            obj.setPrimitiveValue(site!, forKey: "site")
             site?.addPasswordObject(obj)
         }
         return obj
@@ -47,9 +47,7 @@ class PassManager {
     }
     
     func delete(obj:Password) {
-        if let site = obj.site {
-            site.removePasswordObject(obj)
-        }
+        obj.site.removePasswordObject(obj)
         let context = self._managedObjectContext
         context!.deleteObject(obj)
         
@@ -63,7 +61,7 @@ class PassManager {
     }
     
     func select(obj:Password, site:Site) {
-        obj.selected = true
+        site.selecting = obj
         site.pass = obj.pass
     }
 }
