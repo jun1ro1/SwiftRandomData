@@ -21,3 +21,10 @@ class Password: NSManagedObject {
     @NSManaged var site: Site
 
 }
+
+extension Password {
+    override func awakeFromInsert() {
+        self.setPrimitiveValue(NSDate(), forKey: "createdAt")
+        self.setPrimitiveValue(NSUUID().UUIDString, forKey: "uuid")
+    }
+}

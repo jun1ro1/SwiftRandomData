@@ -9,27 +9,6 @@
 import UIKit
 import CoreData
 
-// MARK: - Utility functions
-
-func unique<T: Equatable>(array: [T]) -> [T] {
-    var result = [T]()
-    
-    for elm in array {
-        if find(result, elm) == nil {
-            result += [elm]
-        }
-    }
-    return result
-}
-
-func difference<T: Equatable>(x: [T], y: [T]) -> [T] {
-    return x.filter {find(y, $0) == nil}
-}
-
-func intersection<T: Equatable>(x: [T], y: [T]) -> [T] {
-    return x.filter {find(y, $0) == nil ? false : true}
-}
-
 // MARK: Cell Classes
 
 class J1TextFieldCell: UITableViewCell {
@@ -60,7 +39,9 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     // MARK: - Properties
     
-    var detailItem: NSManagedObject? = nil {
+    var detailItem: Site? = nil
+/*
+{
         didSet {
             for key in  [  "title", "url", "userid", "pass", "memo" ] {
                 self.appData[ key ] = self.detailItem?.valueForKey( key )?.description
@@ -71,17 +52,20 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
  //           self.tableView.reloadData()
         }
     }
-    
+*/
+
     var deferredClosure = Array<()->Void>()
     var deferredClosure2 = Array<()->Void>()
     
-    var appData: [String: AnyObject] = [String: AnyObject](){
+    var appData: [String: AnyObject] = [String: AnyObject]()
+/*{
         didSet {
 //            self.configureView()
             self.tableView.reloadData()
         }
     }
-    
+*/
+
     let lengthArray          = [ 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 32 ]
     var lengthLabel: UILabel?
     
@@ -644,38 +628,27 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             case "title", "url", "userid":
                 let str = (sender as UITextField).text
                 self.appData[key] = str
-                self.deferredClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
+                self.deferredClosure.append { self.detailItem!.setValue(str, forKey: key) }
                 
             case "pass":
                 let str = (sender as UITextField).text
                 self.appData[key] = str
-
-                var pass = self.passManager.create(self.detailItem as? Site)
+                var pass = self.passManager.create(self.detailItem!)
                 pass.pass   = self.appData["pass"] as String
-                pass.site   = self.detailItem as Site
-                self.passManager.select(pass, site: self.detailItem? as Site)
-                
-                self.deferredClosure.append { var i=0; self.detailItem?.setValue(str, forKey: key) }
+                self.passManager.select(pass, site: self.detailItem!)
+                self.deferredClosure.append { self.detailItem!.setValue(str, forKey: key) }
 
             case "generator":
-                var str = self.passField?.text
-                if str == nil || str == "" {
-                    str = (self.appData[ "pass" ] as? String) ?? ""
-                }
+                var str = self.passField?.text ?? self.detailItem!.pass
                 self.appData[ "random" ] = str
                 switchGenerator()
-                self.deferredClosure.append {
-                    var i=0; self.detailItem?.setValue(self.appData[ "random" ] as String, forKey: "pass")
-                }
+                self.deferredClosure.append { self.detailItem!.setValue(self.appData[ "random" ], forKey: "pass") }
                 
             case "set":
                 self.appData[ "pass" ] = self.appData[ "random" ] as? String ?? ""
-                if key == "set" {
-                    var pass = self.passManager.create(self.detailItem as? Site)
-                    pass.pass   = self.appData["pass"] as String
-                    pass.site   = self.detailItem as Site
-                    self.passManager.select(pass, site: self.detailItem? as Site)
-                }
+                var pass = self.passManager.create(self.detailItem)
+                pass.pass   = self.appData["pass"] as String
+                self.passManager.select(pass, site: self.detailItem!)
                 switchGenerator()
                 
             default:
@@ -691,16 +664,19 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     func valueChanged( stepper: UIStepper! ) {
         self.appData[ "length" ] = self.lengthArray[ Int( round( stepper.value ) ) ]
 
-        self.deferredClosure.append( {
-           var i=0;  self.detailItem?.setValue(self.appData[ "length"], forKey: "length")
-        })
-        
+        if let label = self.lengthLabel {
+            let str = NSString( format: "%d", self.appData[ "length" ] as Int )
+            label.text = str
+        }
+ 
         if var tf = self.randomField {
             self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
                 option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
             tf.text = self.appData[ "random" ] as String
         }
-//            self.makeRandom()
+
+        self.deferredClosure.append { self.detailItem!.setValue(self.appData[ "length"], forKey: "length") }
+       
     }
 
     func refresh(sender:AnyObject)
@@ -722,7 +698,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         // Pass the selected object to the new view controller.
         
         if segue.identifier == "ShowPass" {
-            (segue.destinationViewController as PassViewController).context = self.detailItem as Site
+            (segue.destinationViewController as PassViewController).context = self.detailItem
         }
         
     }
@@ -760,20 +736,12 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
 //        println("picker view selected")
         self.appData[ "option" ] = pickerView.selectedRowInComponent(0)
-
-        var key = "option"
-        self.deferredClosure.append( {
-           var i=0;  self.detailItem?.setValue(self.appData[ key ], forKey: key)
-        })
-
-        if var tf = self.randomField {
+         if var tf = self.randomField {
           self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
             option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
           tf.text = self.appData[ "random" ] as String
         }
-
-//        var random: J1RandomEntry = self.detailItem as J1RandomEntry
-//        random.option = J1RandomOption(rawValue: row )!
- //       self.detailItem = random;
+        let key = "option"
+        self.deferredClosure.append { self.detailItem!.setValue(self.appData[ key ], forKey: key) }
     }
 }

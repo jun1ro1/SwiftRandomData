@@ -81,7 +81,7 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
         let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
-        println("PassViewController num. of rows = \(sectionInfo.numberOfObjects)")
+//        println("PassViewController num. of rows = \(sectionInfo.numberOfObjects)")
         return sectionInfo.numberOfObjects
     }
 
@@ -103,13 +103,16 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
 
         let oldIndexPath = self.fetchedResultsController.indexPathForObject(self.selected!)!
+        var indexPaths = [indexPath]
+        indexPaths.append(oldIndexPath)
+        indexPaths = unique(indexPaths)
         let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as Password
         
         self.selected = pass
 //        self.context!.selecting = pass
         
         tableView.beginUpdates()
-        tableView.reloadRowsAtIndexPaths([indexPath, oldIndexPath], withRowAnimation: .Automatic)
+        tableView.reloadRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
         tableView.endUpdates()
         
         self.passManager.select(pass, site: self.context!)

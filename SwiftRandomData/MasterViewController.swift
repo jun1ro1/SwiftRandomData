@@ -71,14 +71,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if segue.identifier == "ShowSite" {
             // http://stackoverflow.com/questions/9339302/indexpath-for-segue-from-accessorybutton
             if let indexPath = self.tableView.indexPathForCell(sender as UITableViewCell) {
-                let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject
+                let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as Site
                 (segue.destinationViewController as SiteViewController).detailItem = object
             }
         }
         else if segue.identifier == "EditSite" {
             let cdm = J1CoreDataManager.sharedInstance
             let context = cdm.managedObjectContext!
-            let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Site", inManagedObjectContext: context) as NSManagedObject
+            let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Site", inManagedObjectContext: context) as Site
             let vc = segue.destinationViewController as SiteViewController
             vc.detailItem = newManagedObject
             vc.setEditing(true, animated:false)

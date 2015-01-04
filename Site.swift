@@ -32,6 +32,12 @@ class Site: NSManagedObject {
 
 // http://stackoverflow.com/questions/25291760/swift-and-coredata-problems-with-relationship-nsset-nsset-intersectsset
 extension Site {
+    override func awakeFromInsert() {
+        self.setPrimitiveValue(NSDate(), forKey: "createdAt")
+        self.setPrimitiveValue(4, forKey: "length")
+        self.setPrimitiveValue(NSUUID().UUIDString, forKey: "uuid")
+    }
+    
     func addPasswordObject( pass: Password ){
         var array = self.passwords.allObjects as [Password]
         array.append( pass )
