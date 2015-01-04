@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>06F5770B-1DFB-49F8-A848-A07B6F5DEBBB</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SwiftRandomData</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>AEFFDA5D47F5693B305D2BB442CE40B9FCCE7216</key>
+		<string>https://github.com/jun1ro1/SwiftRandomData.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SwiftRandomData.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>AEFFDA5D47F5693B305D2BB442CE40B9FCCE7216</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/jun1ro1/SwiftRandomData.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>AEFFDA5D47F5693B305D2BB442CE40B9FCCE7216</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>AEFFDA5D47F5693B305D2BB442CE40B9FCCE7216</string>
+			<key>IDESourceControlWCCName</key>
+			<string>SwiftRandomData</string>
+		</dict>
+	</array>
+</dict>
+</plist>
