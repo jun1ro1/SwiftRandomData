@@ -4,6 +4,8 @@ import UIKit
 
 var str = "Hello, playground"
 
+var hh = [ "a": 10, "b": 20 ]
+map(hh) { print( $0 ) }
 
 var s = "ABCDEFG"
 
@@ -31,6 +33,7 @@ var h = [
 "memo":    3 * 100 + 0 ]
 h
 h.count
+
 
 
 var x = h.values.array.sorted(<).map( { ($0 / 100, $0 % 100 ) } )

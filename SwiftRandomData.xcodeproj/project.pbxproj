@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F91EFEED19E1539500112153 /* SiteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91EFEEC19E1539500112153 /* SiteViewController.swift */; };
+		F93486AF1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93486AE1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift */; };
 		F957E8F319C6FBAB00A4BA46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F219C6FBAB00A4BA46 /* AppDelegate.swift */; };
 		F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F719C6FBAB00A4BA46 /* MasterViewController.swift */; };
 		F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */; };
@@ -42,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		F91EFEEC19E1539500112153 /* SiteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiteViewController.swift; sourceTree = "<group>"; };
+		F93486AE1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1ManagedObjectProxy.swift; sourceTree = "<group>"; };
 		F9490E151A2B5834001C860C /* SwiftRandomData 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 4.xcdatamodel"; sourceTree = "<group>"; };
 		F957E8ED19C6FBAB00A4BA46 /* SwiftRandomData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftRandomData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F957E8F119C6FBAB00A4BA46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 		F957E8EF19C6FBAB00A4BA46 /* SwiftRandomData */ = {
 			isa = PBXGroup;
 			children = (
+				F93486AE1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift */,
 				F9F50B741A56E4F000322BE2 /* Algorithm.swift */,
 				F95AA38B1A41D29200C08417 /* Site.swift */,
 				F95AA3881A41D29100C08417 /* Password.swift */,
@@ -265,6 +268,7 @@
 				F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */,
 				F957E92519C7197C00A4BA46 /* J1SiteManager.swift in Sources */,
 				F95AA38C1A41D29200C08417 /* Site.swift in Sources */,
+				F93486AF1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift in Sources */,
 				F9F50B751A56E4F000322BE2 /* Algorithm.swift in Sources */,
 				F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */,
 				F957E91A19C6FD0B00A4BA46 /* J1RandomData.swift in Sources */,
