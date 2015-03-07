@@ -17,33 +17,11 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     // MARK: - Properties
     
     var detailItem: Site? = nil
-/*
-{
-        didSet {
-            for key in  [  "title", "url", "userid", "pass", "memo" ] {
-                self.appData[ key ] = self.detailItem?.valueForKey( key )?.description
-            }
-            for key in [ "length", "option" ] {
-                self.appData[ key ] = self.detailItem?.valueForKey( key )? as? Int
-            }
- //           self.tableView.reloadData()
-        }
-    }
-*/
-
-//    var deferredClosure = Array<()->Void>()
-//    var deferredClosure2 = Array<()->Void>()
+    var proxy: J1ManagedObjectProxy?
     
-    var appData: [String: AnyObject] = [String: AnyObject]()
-    var appDataChanged: [String] = [String]()
-/*{
-        didSet {
-//            self.configureView()
-            self.tableView.reloadData()
-        }
-    }
-*/
-
+    // MARK: - Instances
+    var random = ""
+    
     let lengthArray          = [ 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 32 ]
     var lengthLabel: UILabel?
     
@@ -239,7 +217,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     func configureView() {
         if let label = self.lengthLabel {
-            let str = NSString( format: "%d", self.appData[ "length" ] as Int? ?? 0 )
+            let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int? ?? 0 )
             label.text = str
         }
     }
@@ -264,84 +242,47 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.proxy = J1ManagedObjectProxy(managedObject: self.detailItem!)
 
-        for key in  [  "title", "url", "userid", "pass", "memo" ] {
-            self.appData[ key ] = self.detailItem?.valueForKey( key )?.description
-        }
-        for key in [ "length", "option" ] {
-            self.appData[ key ] = self.detailItem?.valueForKey( key )? as? Int
-        }
-        
-//        self.keys.map {
-//            (self.appData as NSDictionary).addObserver(self, forKeyPath: $0, options: (.New | .Old), context: nil)
-//        }
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
         self.configureButtons(animated: false)
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-//      self.title = self.detailItem?.valueForKey("title")?.description
-        self.title = self.appData["title"] as? String
+
+        self.title = self.proxy!.valueForKey("title") as? String
         self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        for key in self.appDataChanged {
-            if let val: AnyObject? = self.appData[ key ] {
-                self.detailItem!.setValue(val, forKey: key)
-                if let indexPath = self.keyToIndexPath(key) {
+        if self.proxy!.hasChanges {
+            self.proxy!.writeBack {
+                (key, val) in
+                if let indexPath = self.keyToIndexPath(key as String) {
                     self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+
                 }
             }
         }
-        self.appDataChanged.removeAll(keepCapacity: false)
-        
-//        for closure in self.deferredClosure2 {
-//            closure()
-//        }
-//        self.deferredClosure2 = Array<()->Void>()
     }
     
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         
-        for key in self.appDataChanged {
-            if let val: AnyObject? = self.appData[ key ] {
-                self.detailItem!.setValue(val, forKey: key)
-            }
-        }
-        if self.appDataChanged.count > 0 {
+        let changed = self.proxy!.hasChanges
+        self.proxy!.writeBack { (key, val) in }
+        if changed {
             let cdm = J1CoreDataManager.sharedInstance
             let context = cdm.managedObjectContext!
             var error: NSError? = nil
             if !context.save(&error) {
                 abort()
             }
+            
         }
-        self.appDataChanged.removeAll(keepCapacity: false)
-
-//        for closure in self.deferredClosure {
-//            closure()
-//        }
-//        if self.deferredClosure.count > 0 {
-//            let cdm = J1CoreDataManager.sharedInstance
-//            let context = cdm.managedObjectContext!
-//            var error: NSError? = nil
-//            if !context.save(&error) {
-//                abort()
-//            }
-//        }
-//        self.deferredClosure = Array<()->Void>()
     }
     
     override func didReceiveMemoryWarning() {
@@ -372,22 +313,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         }
         return rows + 1
     }
-/*
-    func findSubview<T>(contentView: UIView, forClass: T) -> T? {
-        let subViews = contentView.subviews.filter {$0 is T}
-        if subViews.count <= 0 {
-            println("Any class is found in \(contentView.description)" )
-            return nil
-        }
-        else if subViews.count > 1 {
-            println("Some classes are found in \(contentView.description)" )
-            return nil
-        }
-        else {
-            return subViews[0] as? T
-        }
-    }
-*/
+
     func addTarget(control: UIControl, action: Selector, forControlEvents controlEvents: UIControlEvents) {
         var act: Selector?
         if let acts = control.actionsForTarget(self, forControlEvent: controlEvents) {
@@ -413,10 +339,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 case "title", "url", "userid", "pass", "memo":
                     let tag = self.keyToTag(key) ?? 0
                     // get a text field view
-//                    if let tf = self.findSubview(cell.contentView, forClass: UITextField()) {
                     if let tf = (cell as? J1TextFieldCell)?.textField {
-//                      tf.text        = self.detailItem?.valueForKey(key)?.description
-                        tf.text        = self.appData[ key ] as? String
+                        tf.text        = self.proxy!.valueForKey(key) as? String
                         tf.placeholder = self._keyToPlaceholder[key]
                         tf.tag = tag
                         self.addTarget(tf, action: "tapped:", forControlEvents: .EditingDidEnd)
@@ -426,7 +350,6 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                     }
                     
                 case "length":
-//                    if let stepper = self.findSubview(cell.contentView, forClass: UIStepper()) {
                     if let stepper = (cell as? J1StepperCell)?.stepper {
                         self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
                         stepper.minimumValue = Double( 0 )
@@ -434,36 +357,29 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         stepper.stepValue    = Double( 1 )
                         stepper.value        = Double( 0 )
                         stepper.continuous   = false
-                        if let len = self.appData[ "length" ] as? Int {
-                            if let i = find(  self.lengthArray, self.appData[ "length" ] as Int ) {
+                        if let len = self.proxy!.valueForKey("length") as? Int {
+                            if let i = find(  self.lengthArray, len ) {
                                 stepper.value = Double( i )
                             }
                             else {
-                                self.appData[ "length" ] = lengthArray[ 0 ]
+                                self.proxy!.setValue(lengthArray[0], forKey: "length")
                             }
                         }
                     }
-//                    if let label = self.findSubview(cell.contentView, forClass: UILabel()) {
                     if let label = (cell as? J1StepperCell)?.label {
                         if self.lengthLabel != nil {
                             assert(self.lengthLabel == label, "lengthLabel is reallocated \(self.lengthLabel) \(label)")
                         }
                         self.lengthLabel = label
-                        let str = NSString( format: "%d", self.appData[ "length" ] as Int? ?? 0 )
+                        let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int? ?? 0 )
                         label.text = str
                     }
 
                 case "picker":
-//                  var pvs = cell.contentView.subviews.filter {$0 is UIPickerView}
-//                        if pvs.count <= 0 || pvs.count > 1 {
-//                            println( "\(cell) does not contain UIPickerView")
-//                            return
-//                        }
-//                        let pv = pvs[0] as UIPickerView
                     if var pv = (cell as? J1PcikerCell)?.picker {
                         pv.delegate = self
                         pv.dataSource = self
-                        pv.selectRow(self.appData[ "option"] as? Int ?? 0, inComponent: 0, animated: false)
+                        pv.selectRow(self.proxy!.valueForKey("option") as? Int ?? 0, inComponent: 0, animated: false)
                     }
                     
                 case "generator":
@@ -477,14 +393,11 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 case "generated":
                     if var tf = (cell as? J1GeneratedPassCell)?.textField {
                         self.randomField = tf
-//                        self.appData[ "random"] = self.randgen.getRandomString((self.appData[ "length"] as Int),
-//                                    option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
-                        tf.text = self.appData[ "random" ] as? String ?? ""
+                        tf.text = self.random
                     }
                     
                 case "set":
                     if var button = (cell as? J1ButtonCell)?.button {
-//                        button.titleLabel?.text = "Password Generator"
                         button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
                         let tag = self.keyToTag(key) ?? 0
                         button.tag = tag
@@ -497,8 +410,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         }
         else {
             if let key = self.indexPathToKey(indexPath) {
-//              cell.textLabel.text = self.detailItem?.valueForKey(key)?.description
-                cell.textLabel?.text = self.appData[key] as? String
+                cell.textLabel?.text = self.proxy!.valueForKey(key) as? String
             }
         }
     }
@@ -642,30 +554,24 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             switch(key) {
             case "title", "url", "userid":
                 let str = (sender as UITextField).text
-                self.appData[key] = str
-                self.appDataChanged.append(key)
-//                self.deferredClosure.append { self.detailItem!.setValue(str, forKey: key) }
+                self.proxy!.setValue(str, forKey: key)
                 
             case "pass":
                 let str = (sender as UITextField).text
-                self.appData[key] = str
+                self.proxy!.setValue(str, forKey: key)
                 var pass = self.passManager.create(self.detailItem!)
-                pass.pass   = self.appData["pass"] as String
+                pass.pass   = self.proxy!.valueForKey("pass") as String
                 self.passManager.select(pass, site: self.detailItem!)
-                self.appDataChanged.append(key)
-//                self.deferredClosure.append { self.detailItem!.setValue(str, forKey: key) }
 
             case "generator":
                 var str = self.passField?.text ?? self.detailItem!.pass
-                self.appData[ "random" ] = str
+                self.random = str
                 switchGenerator()
-                self.appDataChanged.append("pass")
-//                self.deferredClosure.append { self.detailItem!.setValue(self.appData[ "random" ], forKey: "pass") }
                 
             case "set":
-                self.appData[ "pass" ] = self.appData[ "random" ] as? String ?? ""
+                self.proxy!.setValue(self.random, forKey: "pass")
                 var pass = self.passManager.create(self.detailItem)
-                pass.pass   = self.appData["pass"] as String
+                pass.pass   = self.proxy!.valueForKey("pass") as String
                 self.passManager.select(pass, site: self.detailItem!)
                 switchGenerator()
                 
@@ -680,32 +586,34 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     
  
     func valueChanged( stepper: UIStepper! ) {
-        self.appData[ "length" ] = self.lengthArray[ Int( round( stepper.value ) ) ]
+        self.proxy!.setValue(self.lengthArray[ Int( round( stepper.value ) ) ], forKey: "length")
+        
 
         if let label = self.lengthLabel {
-            let str = NSString( format: "%d", self.appData[ "length" ] as Int )
+            let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int )
             label.text = str
         }
  
         if var tf = self.randomField {
-            self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
-                option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
-            tf.text = self.appData[ "random" ] as String
+            self.random = self.randgen.getRandomString(
+                self.proxy!.valueForKey("length") as Int,
+                option:
+                    J1RandomOption(rawValue: self.proxy!.valueForKey("option") as Int)!)!
+            tf.text = self.random
         }
-        self.appDataChanged.append("length")
-//        self.deferredClosure.append { self.detailItem!.setValue(self.appData[ "length"], forKey: "length") }
        
     }
 
     func refresh(sender:AnyObject)
     {
         if var tf = self.randomField {
-            self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
-                option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
-            tf.text = self.appData[ "random" ] as String
-        }
+        self.random = self.randgen.getRandomString(
+            self.proxy!.valueForKey("length") as Int,
+            option:
+            J1RandomOption(rawValue: self.proxy!.valueForKey("option") as Int)!)!
+        tf.text = self.random
+    }
         self.refreshControl!.endRefreshing()
-//        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
     }
 
     // MARK: - Navigation
@@ -728,17 +636,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     @IBAction func unwindToSiteView(segue: UIStoryboardSegue) {
         if let pvc: PassViewController = segue.sourceViewController as? PassViewController {
             let str = pvc.context!.selecting.pass
-            self.appData[ "pass" ] = str
-            self.appDataChanged.append("pass")
-
-//            self.deferredClosure2.append {
-//                self.detailItem?.setValue(str, forKey: "pass")
-//                self.appData[ "pass" ] = str
-////                self.tableView.reloadData()
-//                if let indexPath = self.keyToIndexPath("pass") {
-//                    self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-//                }
-//            }
+            self.proxy!.setValue(str, forKey: "pass")
         }
     }
     
@@ -755,17 +653,13 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-//        println("picker view selected")
-        self.appData[ "option" ] = pickerView.selectedRowInComponent(0)
+        self.proxy!.setValue(
+            pickerView.selectedRowInComponent(0), forKey: "option")
          if var tf = self.randomField {
-          self.appData[ "random" ] = self.randgen.getRandomString((self.appData[ "length"] as Int),
-            option: J1RandomOption(rawValue: (self.appData["option"] as Int))!)
-          tf.text = self.appData[ "random" ] as String
+          self.random = self.randgen.getRandomString((self.proxy!.valueForKey("length") as Int),
+            option: J1RandomOption(rawValue: (self.proxy!.valueForKey("option") as Int))!)!
+          tf.text = self.random as String
         }
-        self.appDataChanged.append("option")
-
-//        let key = "option"
-//        self.deferredClosure.append { self.detailItem!.setValue(self.appData[ key ], forKey: key) }
     }
 }
 
