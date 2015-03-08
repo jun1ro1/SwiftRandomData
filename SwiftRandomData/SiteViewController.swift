@@ -411,6 +411,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         else {
             if let key = self.indexPathToKey(indexPath) {
                 cell.textLabel?.text = self.proxy!.valueForKey(key) as? String
+                cell.accessoryType = (key == "url" || key == "pass") ? .DisclosureIndicator : .None
             }
         }
     }
@@ -630,7 +631,14 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     }
     
     override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
-        return true
+        var result = false
+        if let cell: UITableViewCell = sender as? UITableViewCell {
+            let indexPath = self.tableView.indexPathForCell(cell)
+            let key = self.indexPathToKey(indexPath!)
+            result = key == "pass"
+            
+        }
+        return result
     }
     
     @IBAction func unwindToSiteView(segue: UIStoryboardSegue) {
