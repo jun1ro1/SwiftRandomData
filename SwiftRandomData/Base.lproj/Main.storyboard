@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="rS3-R9-Ivy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1510" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="rS3-R9-Ivy">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -208,6 +208,44 @@
                                     <outlet property="stepper" destination="cjC-U3-s8K" id="zKf-HM-w3h"/>
                                 </connections>
                             </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CellOption" id="CcX-KB-eas" customClass="J1StepperCell" customModule="SwiftRandomData" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CcX-KB-eas" id="PCc-nI-6rg">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="option" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hfL-gx-aVi">
+                                            <rect key="frame" x="421" y="11" width="49" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="g5b-N9-rcu">
+                                            <rect key="frame" x="498" y="3" width="94" height="29"/>
+                                        </stepper>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chars:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dJe-co-qk2">
+                                            <rect key="frame" x="18" y="11" width="143" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="143" id="pvy-ll-nKS"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="g5b-N9-rcu" firstAttribute="leading" secondItem="hfL-gx-aVi" secondAttribute="trailing" constant="28" id="82H-Dd-Vno"/>
+                                        <constraint firstAttribute="centerY" secondItem="dJe-co-qk2" secondAttribute="centerY" id="Mog-WE-9Ay"/>
+                                        <constraint firstAttribute="trailing" secondItem="hfL-gx-aVi" secondAttribute="trailing" constant="130" id="ShH-7s-hEl"/>
+                                        <constraint firstAttribute="centerY" secondItem="hfL-gx-aVi" secondAttribute="centerY" id="cf5-53-G0E"/>
+                                        <constraint firstItem="dJe-co-qk2" firstAttribute="leading" secondItem="PCc-nI-6rg" secondAttribute="leadingMargin" constant="10" id="q23-08-TsR"/>
+                                        <constraint firstItem="dJe-co-qk2" firstAttribute="bottom" secondItem="g5b-N9-rcu" secondAttribute="bottom" id="rUU-bB-Z8c"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="label" destination="hfL-gx-aVi" id="PkT-lt-eVf"/>
+                                    <outlet property="stepper" destination="g5b-N9-rcu" id="tv1-fb-dfk"/>
+                                </connections>
+                            </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell-generated" id="Z4K-xb-8mr" customClass="J1GeneratedPassCell" customModule="SwiftRandomData" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -279,7 +317,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lrm-kH-fPn" sceneMemberID="firstResponder"/>
                 <exit id="pSp-bn-gFC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1343" y="33"/>
+            <point key="canvasLocation" x="1343" y="30"/>
         </scene>
         <!--Pass View Controller-->
         <scene sceneID="xQd-oD-hdm">

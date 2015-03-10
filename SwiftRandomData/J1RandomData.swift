@@ -33,15 +33,15 @@ enum J1RandomOption: Int {
         case .Digits:
             str = "0-9"
         case .HexDigits:
-            str = "0-9 A-F"
+            str = "0-A-F"
         case .UpperCaseLetters:
-            str = "0-9 A-Z"
+            str = "0-A-Z"
         case .LowerCaseLetters:
-            str = "0-9 A-Z a-z"
+            str = "0-Z a-z"
         case .ArithmeticCharacters:
-            str = "0-9 A-Z a-z *+-/"
+            str = "0-z *+-/"
         case .Punctations:
-            str = "0-9 A-Z a-z *+-/..(){}"
+            str = "0-z *(){}"
         default:
             str = "???"
         }

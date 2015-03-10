@@ -25,15 +25,20 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     let lengthArray          = [ 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 32 ]
     var lengthLabel: UILabel?
     
+    var optionLabel: UILabel?
+    
     var passField: UITextField?
     
     var randgen = J1RandomData()
     var randomField: UITextField?
+    
+    let STEPPER_LENGTH = 1
+    let STEPPER_OPTION = 2
 
 
     // MARK: - Coordinator functions between keys and index paths
 
-    let keys: [String] = [ "title", "url", "userid", "pass", "memo", "length", "option" ]
+//    let keys: [String] = [ "title", "url", "userid", "pass", "memo", "length", "option" ]
     
     var _generatorShowed: Bool = false
     
@@ -51,7 +56,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                             
                             "generated": NSIndexPath(forRow: 0, inSection:2),
                             "length":    NSIndexPath(forRow: 1, inSection:2),
-                            "picker":    NSIndexPath(forRow: 2, inSection:2),
+//                          "picker":    NSIndexPath(forRow: 2, inSection:2),
+                            "option":    NSIndexPath(forRow: 2, inSection:2),
                             "set":       NSIndexPath(forRow: 3, inSection:2),
 
                             "memo":      NSIndexPath(forRow: 0, inSection:3) ]
@@ -357,6 +363,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         stepper.stepValue    = Double( 1 )
                         stepper.value        = Double( 0 )
                         stepper.continuous   = false
+                        stepper.tag          = STEPPER_LENGTH
+                        
                         if let len = self.proxy!.valueForKey("length") as? Int {
                             if let i = find(  self.lengthArray, len ) {
                                 stepper.value = Double( i )
@@ -375,12 +383,37 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         label.text = str
                     }
 
-                case "picker":
-                    if var pv = (cell as? J1PcikerCell)?.picker {
-                        pv.delegate = self
-                        pv.dataSource = self
-                        pv.selectRow(self.proxy!.valueForKey("option") as? Int ?? 0, inComponent: 0, animated: false)
+                case "option":
+                    if let stepper = (cell as? J1StepperCell)?.stepper {
+                        var opt = self.proxy!.valueForKey("option") as? Int
+                        if opt == nil {
+                            opt = 0
+                            self.proxy!.setValue(opt!, forKey: "option")
+                        }
+                        
+                        self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
+                        stepper.minimumValue = Double( 0 )
+                        stepper.maximumValue = Double( J1RandomOption.OptionsEnd.rawValue - 1 )
+                        stepper.stepValue    = Double( 1 )
+                        stepper.value        = Double( opt! )
+                        stepper.continuous   = false
+                        stepper.tag          = STEPPER_OPTION
+
+                        let label = (cell as J1StepperCell).label
+                        if self.optionLabel != nil {
+                            assert(self.optionLabel == label, "optionLabel is reallocated \(self.optionLabel) \(label)")
+                        }
+                        self.optionLabel = label
+                        let str = J1RandomOption(rawValue: opt!)?.toString()
+                        label.text = str
                     }
+                    
+//                case "picker":
+//                    if var pv = (cell as? J1PcikerCell)?.picker {
+//                        pv.delegate = self
+//                        pv.dataSource = self
+//                        pv.selectRow(self.proxy!.valueForKey("option") as? Int ?? 0, inComponent: 0, animated: false)
+//                    }
                     
                 case "generator":
                     if var button = (cell as? J1ButtonCell)?.button {
@@ -441,6 +474,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellSet", forIndexPath: indexPath) as UITableViewCell)
             case "length":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellLength", forIndexPath: indexPath) as J1StepperCell)
+            case "option":
+                cell = (tableView.dequeueReusableCellWithIdentifier("CellOption", forIndexPath: indexPath) as J1StepperCell)
             case "char":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellCharacters", forIndexPath: indexPath) as UITableViewCell)
             case "picker":
@@ -586,8 +621,24 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     }
     
  
-    func valueChanged( stepper: UIStepper! ) {
-        self.proxy!.setValue(self.lengthArray[ Int( round( stepper.value ) ) ], forKey: "length")
+    func valueChanged(stepper: UIStepper!) {
+        switch stepper.tag {
+        case STEPPER_LENGTH:
+            self.proxy!.setValue(self.lengthArray[ Int( round( stepper.value ) ) ], forKey: "length")
+            if let label = self.lengthLabel {
+                let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int )
+                label.text = str
+            }
+        case STEPPER_OPTION:
+            let val =  Int(round(stepper.value))
+            self.proxy!.setValue(val, forKey: "option")
+            if let label = self.optionLabel {
+                let str = J1RandomOption(rawValue: val)?.toString()
+                label.text = str
+            }
+        default:
+            let val = Int(round(stepper.value))
+        }
         
 
         if let label = self.lengthLabel {
