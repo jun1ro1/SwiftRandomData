@@ -86,6 +86,9 @@ class J1RandomData {
                 }
         })
         
+
+// data must be cleared for a security reason.
+
         return array
     }
     
