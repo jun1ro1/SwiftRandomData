@@ -23,7 +23,7 @@ class J1SiteManager {
     func insertNewObject(sender: AnyObject) {
         let cdm = J1CoreDataManager.sharedInstance
         let context = cdm.managedObjectContext!
-        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Site", inManagedObjectContext: context) as NSManagedObject
+        _ = NSEntityDescription.insertNewObjectForEntityForName("Site", inManagedObjectContext: context) as NSManagedObject
         
         // If appropriate, configure the new managed object.
         // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.

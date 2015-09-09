@@ -14,7 +14,7 @@ func unique<T: Equatable>(array: [T]) -> [T] {
     var result = [T]()
     
     for elm in array {
-        if find(result, elm) == nil {
+        if result.indexOf(elm) == nil {
             result += [elm]
         }
     }
@@ -22,10 +22,10 @@ func unique<T: Equatable>(array: [T]) -> [T] {
 }
 
 func difference<T: Equatable>(x: [T], y: [T]) -> [T] {
-    return x.filter {find(y, $0) == nil}
+    return x.filter {y.indexOf($0) == nil}
 }
 
 func intersection<T: Equatable>(x: [T], y: [T]) -> [T] {
-    return x.filter {find(y, $0) == nil ? false : true}
+    return x.filter {y.indexOf($0) == nil ? false : true}
 }
 

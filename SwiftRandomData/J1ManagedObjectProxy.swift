@@ -34,13 +34,13 @@ class J1ManagedObjectProxy {
     // MARK: - public methods
     func reload() {
         self._changed = false
-        var entity: NSEntityDescription = self.managedObject.entity;
-        entity.attributesByName.keys.array.map {
+        let entity: NSEntityDescription = self.managedObject.entity;
+        _ = Array( entity.attributesByName.keys ).map {
             self._attributes[$0 as String] = self.managedObject.primitiveValueForKey($0 as String)
         }
     }
     
-    func writeBack(#closure: (NSObject, AnyObject)->Void) {
+    func writeBack(closure closure: (NSObject, AnyObject)->Void) {
         self._changed = false
         for (key, val) in self._attributes {
             self.managedObject.setValue(val, forKey: key)

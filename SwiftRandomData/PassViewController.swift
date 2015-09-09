@@ -86,7 +86,7 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
     }
 
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
-        let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as Password
+        let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Password
         cell.textLabel?.text = pass.pass
         cell.detailTextLabel?.text = (pass.createdAt as NSDate).descriptionWithLocale(nil)
         cell.accessoryType = ( pass == self.selected ) ? .Checkmark : .None
@@ -106,7 +106,7 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         var indexPaths = [indexPath]
         indexPaths.append(oldIndexPath)
         indexPaths = unique(indexPaths)
-        let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as Password
+        let pass = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Password
         
         self.selected = pass
 //        self.context!.selecting = pass
@@ -119,8 +119,11 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
 
         if let moc = self._managedObjectContext {
             if moc.hasChanges {
-                var error: NSError? = nil
-                if !moc.save(&error) {
+                var error: NSError? = nil; _ = error
+                do {
+                    try moc.save()
+                } catch let error1 as NSError {
+                    error = error1
                     abort()
                 }
             }
@@ -192,7 +195,7 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         
         // Edit the sort key as appropriate.
         let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
-        let sortDescriptors = [sortDescriptor]
+        _ = [sortDescriptor]
         
         fetchRequest.sortDescriptors = [sortDescriptor]
         
@@ -208,8 +211,11 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         
         NSFetchedResultsController.deleteCacheWithName(nil)
         
-        var error: NSError? = nil
-        if !_fetchedResultsController!.performFetch(&error) {
+        var error: NSError? = nil; _ = error
+        do {
+            try _fetchedResultsController!.performFetch()
+        } catch let error1 as NSError {
+            error = error1
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             //println("Unresolved error \(error), \(error.userInfo)")
@@ -236,7 +242,7 @@ class PassViewController: UITableViewController, NSFetchedResultsControllerDeleg
         }
     }
     
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath) {
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: NSManagedObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)

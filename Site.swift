@@ -39,14 +39,14 @@ extension Site {
     }
     
     func addPasswordObject( pass: Password ){
-        var array = self.passwords.allObjects as [Password]
+        var array = self.passwords.allObjects as! [Password]
         array.append( pass )
         self.passwords = NSSet(array: array)
     }
     
     func removePasswordObject( pass: Password ){
-        var array = self.passwords.allObjects as [Password]
-        if let index = find( array, pass ) {
+        var array = self.passwords.allObjects as! [Password]
+        if let index = array.indexOf(pass ) {
             array.removeAtIndex(index)
         }
     }

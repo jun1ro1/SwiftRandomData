@@ -50,7 +50,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func viewWillAppear(animated: Bool) {
-        if let indexPath = self.tableView.indexPathForSelectedRow() {
+        if let indexPath = self.tableView.indexPathForSelectedRow {
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
     }
@@ -63,23 +63,23 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     // MARK: - Segues
     
-    override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         return true
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowSite" {
             // http://stackoverflow.com/questions/9339302/indexpath-for-segue-from-accessorybutton
-            if let indexPath = self.tableView.indexPathForCell(sender as UITableViewCell) {
-                let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as Site
-                (segue.destinationViewController as SiteViewController).detailItem = object
+            if let indexPath = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Site
+                (segue.destinationViewController as! SiteViewController).detailItem = object
             }
         }
         else if segue.identifier == "EditSite" {
             let cdm = J1CoreDataManager.sharedInstance
             let context = cdm.managedObjectContext!
-            let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Site", inManagedObjectContext: context) as Site
-            let vc = segue.destinationViewController as SiteViewController
+            let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Site", inManagedObjectContext: context) as! Site
+            let vc = segue.destinationViewController as! SiteViewController
             vc.detailItem = newManagedObject
             vc.setEditing(true, animated:false)
         }
@@ -97,9 +97,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as MasterViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! MasterViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let segue = self.tableView.editing ? "EditSite" : "ShowSite"
+        self.performSegueWithIdentifier(segue, sender: self.tableView.cellForRowAtIndexPath(indexPath))
     }
 
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -110,10 +115,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             let context = self.fetchedResultsController.managedObjectContext
-            context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject)
+            context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
                 
             var error: NSError? = nil
-            if !context.save(&error) {
+            do {
+                try context.save()
+            } catch let error1 as NSError {
+                error = error1
                 // Replace this implementation with code to handle the error appropriately.
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 //println("Unresolved error \(error), \(error.userInfo)")
@@ -142,16 +150,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 */
 
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
-        let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject
+        let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject
         
-        if let mcell = cell as? MasterViewCell {
+        if let cell = cell as? MasterViewCell {
             if let title = object.valueForKey("title")?.description {
-                mcell.title?.text = title
+                cell.title?.text = title
             }
             if let url = object.valueForKey("url")?.description {
-                mcell.url?.text = url
+                cell.url?.text = url
             }
-            mcell.openButton?.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
+//            cell.openButton?.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
        }
     }
     
@@ -168,7 +176,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             control.addTarget(self, action: action, forControlEvents: controlEvents)
         }
         else {
-            println("\(action.description) is already added for event \(controlEvents) in \(control)")
+            print("\(action.description) is already added for event \(controlEvents) in \(control)")
         }
         
     }
@@ -176,7 +184,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func tapped(sender: AnyObject){
         if let button = sender as? UIButton {
             var v: UIView? = button
-            do {
+            repeat {
                 v = v?.superview
             } while ( v != nil && !(v is UITableViewCell) )
             
@@ -210,7 +218,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             // Edit the sort key as appropriate.
             let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-            let sortDescriptors = [sortDescriptor]
+            _ = [sortDescriptor]
             
             fetchRequest.sortDescriptors = [sortDescriptor]
             
@@ -221,7 +229,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             _fetchedResultsController = aFetchedResultsController
             
             var error: NSError? = nil
-            if !_fetchedResultsController!.performFetch(&error) {
+            do {
+                try _fetchedResultsController!.performFetch()
+            } catch let error1 as NSError {
+                error = error1
                 // Replace this implementation with code to handle the error appropriately.
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 //println("Unresolved error \(error), \(error.userInfo)")
@@ -248,14 +259,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
 
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath) {
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: NSManagedObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
             case .Insert:
                 tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
             case .Delete:
                 tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             case .Update:
-                self.configureCell(tableView.cellForRowAtIndexPath(indexPath)!, atIndexPath: indexPath)
+                self.configureCell(tableView.cellForRowAtIndexPath(indexPath!)!, atIndexPath: indexPath!)
             case .Move:
                 tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
                 tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)

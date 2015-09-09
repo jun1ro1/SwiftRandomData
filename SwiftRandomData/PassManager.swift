@@ -31,7 +31,7 @@ class PassManager {
         let context = cdm.managedObjectContext!
         let obj
             = NSEntityDescription.insertNewObjectForEntityForName(ENTITY_PASS, inManagedObjectContext: context)
-                as Password
+                as! Password
         obj.setPrimitiveValue(true ,    forKey: "active")
         obj.setPrimitiveValue(NSDate(), forKey: "createdAt")
         if site != nil {
@@ -52,11 +52,15 @@ class PassManager {
         context!.deleteObject(obj)
         
         var error: NSError? = nil
-        if context!.save(&error) {
+        _ = error
+        do {
+            try context!.save()
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             //println("Unresolved error \(error), \(error.userInfo)")
             abort()
+        } catch let error1 as NSError {
+            error = error1
         }
     }
     

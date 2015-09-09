@@ -43,7 +43,10 @@ class J1CoreDataManager {
         var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
         let opt = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
-        if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: opt, error: &error) == nil {
+        do {
+            try coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: opt)
+        } catch var error1 as NSError {
+            error = error1
             coordinator = nil
             // Report any error we got.
             let dict = NSMutableDictionary()
@@ -55,6 +58,8 @@ class J1CoreDataManager {
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog("Unresolved error \(error), \(error!.userInfo)")
             abort()
+        } catch {
+            fatalError()
         }
         
         return coordinator
@@ -76,7 +81,7 @@ class J1CoreDataManager {
     func saveContext () {
         if let moc = self.managedObjectContext {
             var error: NSError? = nil
-            if moc.hasChanges && !moc.save(&error) {
+            if moc.hasChanges && !moc.save() {
                 // Replace this implementation with code to handle the error appropriately.
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 NSLog("Unresolved error \(error), \(error!.userInfo)")

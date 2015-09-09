@@ -25,6 +25,26 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     let lengthArray          = [ 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 32 ]
     var lengthLabel: UILabel?
     
+    
+    let DIGITS                = "0123456789";
+    let HEXADECIMALS          = "0123456789ABCDEF"
+    let UPPER_CASE_LETTERS    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let LOWER_CASE_LETTERS    = "abcdefghijklmnopqrstuvwxyz";
+    let ARITHMETIC_CHARACTERS = "*+-/"
+    let PUNCTATIONS           = "!\"#$%&'()*+,-./:;<=>?{|}~";
+
+    let charsArray: [CypherCharacters] = [
+        CypherCharacters.Characters(CharacterSets.Digits),
+        CypherCharacters.SpecialCharacters(CharactersNumber.Hexadecimal),
+        CypherCharacters.Characters( CharacterSets.Digits.union( CharacterSets.UppercaseLatinAlphabets ) ),
+
+        CypherCharacters.Characters(
+            CharacterSets.Digits
+                .union( CharacterSets.UppercaseLatinAlphabets )
+                .union( CharacterSets.LowercaseLatinAlphabets ) ),
+        CypherCharacters.Characters(CharacterSets.Base64)
+        ]
+    
     var optionLabel: UILabel?
     
     var passField: UITextField?
@@ -179,8 +199,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         else {
             self.tableView.beginUpdates()
 
-            let beforePaths: [NSIndexPath] = self._keyToIndexPath.values.array
-            var beforeSections: [Int] = beforePaths.map { $0.section }
+            let beforePaths: [NSIndexPath] = Array( self._keyToIndexPath.values )
+            let beforeSections: [Int] = beforePaths.map { $0.section }
             
             self._editing = editing
             if !self._editing && self._generatorShowed {
@@ -188,19 +208,19 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                 self._generatorShowed = false
             }
             
-            let afterPaths: [NSIndexPath]  = self._keyToIndexPath.values.array
-            var afterSections: [Int] = afterPaths.map { $0.section }
+            let afterPaths: [NSIndexPath]  = Array( self._keyToIndexPath.values )
+            let afterSections: [Int] = afterPaths.map { $0.section }
             
-            difference(afterSections, beforeSections).map {
+            _ = difference(afterSections, y: beforeSections).map {
                 self.tableView.insertSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
             }
-            difference(beforeSections, afterSections).map {
+            _ = difference(beforeSections, y: afterSections).map {
                 self.tableView.deleteSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
             }
             
-            self.tableView.insertRowsAtIndexPaths(difference(afterPaths, beforePaths), withRowAnimation: .Fade)
-            self.tableView.deleteRowsAtIndexPaths(difference(beforePaths, afterPaths), withRowAnimation: .Fade)
-            self.tableView.reloadRowsAtIndexPaths(intersection(beforePaths, afterPaths), withRowAnimation: .Fade)
+            self.tableView.insertRowsAtIndexPaths(difference(afterPaths, y: beforePaths), withRowAnimation: .Fade)
+            self.tableView.deleteRowsAtIndexPaths(difference(beforePaths, y: afterPaths), withRowAnimation: .Fade)
+            self.tableView.reloadRowsAtIndexPaths(intersection(beforePaths, y: afterPaths), withRowAnimation: .Fade)
             
             self.tableView.endUpdates()
             self.configureButtons(animated: animated)
@@ -223,12 +243,12 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     func configureView() {
         if let label = self.lengthLabel {
-            let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int? ?? 0 )
-            label.text = str
+            let str = NSString( format: "%d", self.proxy!.valueForKey("length") as! Int? ?? 0 )
+            label.text = str as String
         }
     }
 
-    func configureButtons(#animated: Bool) {
+    func configureButtons(animated animated: Bool) {
         if  self.editing() {
             let addButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "exitFromEdigintMode:")
             self.navigationItem.setRightBarButtonItem(addButton, animated: animated)
@@ -267,7 +287,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         if self.proxy!.hasChanges {
             self.proxy!.writeBack {
                 (key, val) in
-                if let indexPath = self.keyToIndexPath(key as String) {
+                if let indexPath = self.keyToIndexPath(key as! String) {
                     self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
 
                 }
@@ -284,7 +304,11 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             let cdm = J1CoreDataManager.sharedInstance
             let context = cdm.managedObjectContext!
             var error: NSError? = nil
-            if !context.save(&error) {
+            _ = error
+            do {
+                try context.save()
+            } catch let error1 as NSError {
+                error = error1
                 abort()
             }
             
@@ -302,7 +326,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
         var sec = 0
-        for (key, val) in self._keyToIndexPath {
+        for (_, val) in self._keyToIndexPath {
             sec = max( sec, val.section)
         }
         return sec + 1
@@ -312,7 +336,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
         var rows = 0
-        for (key, val) in self._keyToIndexPath {
+        for (_, val) in self._keyToIndexPath {
             if section == val.section {
                 rows = max( rows, val.row )
             }
@@ -333,7 +357,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             control.addTarget(self, action: action, forControlEvents: controlEvents)
         }
         else {
-            println("\(action.description) is already added for event \(controlEvents) in \(control)")
+            print("\(action.description) is already added for event \(controlEvents) in \(control)")
         }
         
     }
@@ -366,7 +390,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         stepper.tag          = STEPPER_LENGTH
                         
                         if let len = self.proxy!.valueForKey("length") as? Int {
-                            if let i = find(  self.lengthArray, len ) {
+                            if let i = self.lengthArray.indexOf(len ) {
                                 stepper.value = Double( i )
                             }
                             else {
@@ -379,8 +403,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                             assert(self.lengthLabel == label, "lengthLabel is reallocated \(self.lengthLabel) \(label)")
                         }
                         self.lengthLabel = label
-                        let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int? ?? 0 )
-                        label.text = str
+                        let str = NSString( format: "%d", self.proxy!.valueForKey("length") as! Int? ?? 0 )
+                        label.text = str as String
                     }
 
                 case "option":
@@ -399,7 +423,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         stepper.continuous   = false
                         stepper.tag          = STEPPER_OPTION
 
-                        let label = (cell as J1StepperCell).label
+                        let label = (cell as! J1StepperCell).label
                         if self.optionLabel != nil {
                             assert(self.optionLabel == label, "optionLabel is reallocated \(self.optionLabel) \(label)")
                         }
@@ -416,7 +440,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 //                    }
                     
                 case "generator":
-                    if var button = (cell as? J1ButtonCell)?.button {
+                    if let button = (cell as? J1ButtonCell)?.button {
                         button.titleLabel?.text = "Password Generator"
                         button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
                         let tag = self.keyToTag(key) ?? 0
@@ -424,13 +448,13 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                     }
 
                 case "generated":
-                    if var tf = (cell as? J1GeneratedPassCell)?.textField {
+                    if let tf = (cell as? J1GeneratedPassCell)?.textField {
                         self.randomField = tf
                         tf.text = self.random
                     }
                     
                 case "set":
-                    if var button = (cell as? J1ButtonCell)?.button {
+                    if let button = (cell as? J1ButtonCell)?.button {
                         button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
                         let tag = self.keyToTag(key) ?? 0
                         button.tag = tag
@@ -473,19 +497,19 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             case "set":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellSet", forIndexPath: indexPath) as UITableViewCell)
             case "length":
-                cell = (tableView.dequeueReusableCellWithIdentifier("CellLength", forIndexPath: indexPath) as J1StepperCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("CellLength", forIndexPath: indexPath) as! J1StepperCell)
             case "option":
-                cell = (tableView.dequeueReusableCellWithIdentifier("CellOption", forIndexPath: indexPath) as J1StepperCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("CellOption", forIndexPath: indexPath) as! J1StepperCell)
             case "char":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellCharacters", forIndexPath: indexPath) as UITableViewCell)
             case "picker":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellPicker", forIndexPath: indexPath) as UITableViewCell)
             case "generator":
-                cell = (tableView.dequeueReusableCellWithIdentifier("Cell-button", forIndexPath: indexPath) as J1ButtonCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("Cell-button", forIndexPath: indexPath) as! J1ButtonCell)
             case "generated":
-                cell = (tableView.dequeueReusableCellWithIdentifier("Cell-" + key!, forIndexPath: indexPath) as J1GeneratedPassCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("Cell-" + key!, forIndexPath: indexPath) as! J1GeneratedPassCell)
             default:
-                cell = (tableView.dequeueReusableCellWithIdentifier("CellEdit", forIndexPath: indexPath) as J1TextFieldCell)
+                cell = (tableView.dequeueReusableCellWithIdentifier("CellEdit", forIndexPath: indexPath) as! J1TextFieldCell)
             }
         }
         else {
@@ -554,24 +578,24 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     func switchGenerator() {
         self.tableView.beginUpdates()
         
-        let befPaths: [NSIndexPath] = self._keyToIndexPath.values.array
+        let befPaths: [NSIndexPath] = Array(self._keyToIndexPath.values)
         let befSections: [Int] = befPaths.map { $0.section }
         
         self._generatorShowed = !self._generatorShowed
         
-        let aftPaths: [NSIndexPath] = self._keyToIndexPath.values.array
+        let aftPaths: [NSIndexPath] = Array(self._keyToIndexPath.values)
         let aftSections: [Int] = aftPaths.map { $0.section }
         
-        difference(aftSections, befSections).map {
+        _ = difference(aftSections, y: befSections).map {
             self.tableView.insertSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
         }
-        difference(befSections, aftSections).map {
+        _ = difference(befSections, y: aftSections).map {
             self.tableView.deleteSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
         }
         
-        self.tableView.insertRowsAtIndexPaths(difference(aftPaths, befPaths),   withRowAnimation: .Fade)
-        self.tableView.deleteRowsAtIndexPaths(difference(befPaths, aftPaths),   withRowAnimation: .Fade)
-        self.tableView.reloadRowsAtIndexPaths(intersection(befPaths, aftPaths), withRowAnimation: .Fade)
+        self.tableView.insertRowsAtIndexPaths(difference(aftPaths, y: befPaths),   withRowAnimation: .Fade)
+        self.tableView.deleteRowsAtIndexPaths(difference(befPaths, y: aftPaths),   withRowAnimation: .Fade)
+        self.tableView.reloadRowsAtIndexPaths(intersection(befPaths, y: aftPaths), withRowAnimation: .Fade)
         
         self.tableView.endUpdates()
         
@@ -589,34 +613,34 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         if let key = self.tagToKey(sender.tag) {
             switch(key) {
             case "title", "url", "userid":
-                let str = (sender as UITextField).text
+                let str = (sender as! UITextField).text
                 self.proxy!.setValue(str, forKey: key)
                 
             case "pass":
-                let str = (sender as UITextField).text
+                let str = (sender as! UITextField).text
                 self.proxy!.setValue(str, forKey: key)
-                var pass = self.passManager.create(self.detailItem!)
-                pass.pass   = self.proxy!.valueForKey("pass") as String
+                let pass = self.passManager.create(self.detailItem!)
+                pass.pass   = self.proxy!.valueForKey("pass") as! String
                 self.passManager.select(pass, site: self.detailItem!)
 
             case "generator":
-                var str = self.passField?.text ?? self.detailItem!.pass
+                let str = self.passField?.text ?? self.detailItem!.pass
                 self.random = str
                 switchGenerator()
                 
             case "set":
                 self.proxy!.setValue(self.random, forKey: "pass")
-                var pass = self.passManager.create(self.detailItem)
-                pass.pass   = self.proxy!.valueForKey("pass") as String
+                let pass = self.passManager.create(self.detailItem)
+                pass.pass   = self.proxy!.valueForKey("pass") as! String
                 self.passManager.select(pass, site: self.detailItem!)
                 switchGenerator()
                 
             default:
-                println("not implemented for \(key)")
+                print("not implemented for \(key)")
             }
         }
         else {
-            println("Unknown sender: \(sender.description)")
+            print("Unknown sender: \(sender.description)")
         }
     }
     
@@ -626,8 +650,8 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         case STEPPER_LENGTH:
             self.proxy!.setValue(self.lengthArray[ Int( round( stepper.value ) ) ], forKey: "length")
             if let label = self.lengthLabel {
-                let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int )
-                label.text = str
+                let str = NSString( format: "%d", self.proxy!.valueForKey("length") as! Int )
+                label.text = str as String
             }
         case STEPPER_OPTION:
             let val =  Int(round(stepper.value))
@@ -642,15 +666,15 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         
 
         if let label = self.lengthLabel {
-            let str = NSString( format: "%d", self.proxy!.valueForKey("length") as Int )
-            label.text = str
+            let str = NSString( format: "%d", self.proxy!.valueForKey("length") as! Int )
+            label.text = str as String
         }
  
-        if var tf = self.randomField {
+        if let tf = self.randomField {
             self.random = self.randgen.getRandomString(
-                self.proxy!.valueForKey("length") as Int,
+                self.proxy!.valueForKey("length") as! Int,
                 option:
-                    J1RandomOption(rawValue: self.proxy!.valueForKey("option") as Int)!)!
+                    J1RandomOption(rawValue: self.proxy!.valueForKey("option") as! Int)!)!
             tf.text = self.random
         }
        
@@ -658,11 +682,11 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
     func refresh(sender:AnyObject)
     {
-        if var tf = self.randomField {
+        if let tf = self.randomField {
         self.random = self.randgen.getRandomString(
-            self.proxy!.valueForKey("length") as Int,
+            self.proxy!.valueForKey("length") as! Int,
             option:
-            J1RandomOption(rawValue: self.proxy!.valueForKey("option") as Int)!)!
+            J1RandomOption(rawValue: self.proxy!.valueForKey("option") as! Int)!)!
         tf.text = self.random
     }
         self.refreshControl!.endRefreshing()
@@ -676,12 +700,12 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         // Pass the selected object to the new view controller.
         
         if segue.identifier == "ShowPass" {
-            (segue.destinationViewController as PassViewController).context = self.detailItem
+            (segue.destinationViewController as! PassViewController).context = self.detailItem
         }
         
     }
     
-    override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         var result = false
         if let cell: UITableViewCell = sender as? UITableViewCell {
             let indexPath = self.tableView.indexPathForCell(cell)
@@ -707,16 +731,16 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         return J1RandomOption.OptionsEnd.rawValue
     }
     
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return J1RandomOption(rawValue: row)?.toString()
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.proxy!.setValue(
             pickerView.selectedRowInComponent(0), forKey: "option")
-         if var tf = self.randomField {
-          self.random = self.randgen.getRandomString((self.proxy!.valueForKey("length") as Int),
-            option: J1RandomOption(rawValue: (self.proxy!.valueForKey("option") as Int))!)!
+         if let tf = self.randomField {
+          self.random = self.randgen.getRandomString((self.proxy!.valueForKey("length") as! Int),
+            option: J1RandomOption(rawValue: (self.proxy!.valueForKey("option") as! Int))!)!
           tf.text = self.random as String
         }
     }

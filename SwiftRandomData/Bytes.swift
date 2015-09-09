@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias Bytes = [Byte]
+public typealias Bytes = [UInt8]
 
 func isZero( vals: Bytes ) -> Bool {
     let len = vals.count
@@ -20,7 +20,7 @@ func isZero( vals: Bytes ) -> Bool {
 }
 
 func zerosuppress( vals: Bytes! ) -> Bytes {
-    var len = vals.count
+    let len = vals.count
     var i   = 0
     while i < len && vals[ i ] == 0 {
         ++i
@@ -31,14 +31,14 @@ func zerosuppress( vals: Bytes! ) -> Bytes {
     }
     else {
         var newVals: Bytes = vals  //.unshare()
-        for j in 0..<i {
+        for _ in 0..<i {
             newVals.removeAtIndex(0)
         }
         return newVals
     }
 }
 
-func / ( dividend: Bytes, divisor: Byte ) -> ( Bytes, Byte ) {
+func / ( dividend: Bytes, divisor: UInt8 ) -> ( Bytes, UInt8 ) {
     if divisor == 0 {
         return ( [ 0 ], 0 )
     }
@@ -52,13 +52,13 @@ func / ( dividend: Bytes, divisor: Byte ) -> ( Bytes, Byte ) {
     var remainder = 0
     for val in dividend {
         let x = remainder * 0x100 + Int( val )
-        quotient.append( Byte( x / Int( divisor ) ) )
+        quotient.append( (UInt8)( x / Int( divisor ) ) )
         remainder = x % Int( divisor )
     }
-    return ( zerosuppress( quotient ), Byte( remainder ) )
+    return ( zerosuppress( quotient ), UInt8( remainder ) )
 }
 
-func convertBase( vals: Bytes, base: Byte ) -> Bytes {
+func convertBase( vals: Bytes, base: UInt8 ) -> Bytes {
     var dividend = vals
     var newVals: Bytes = []
     while !isZero( dividend ) {
