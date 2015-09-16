@@ -34,15 +34,10 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     let PUNCTATIONS           = "!\"#$%&'()*+,-./:;<=>?{|}~";
 
     let charsArray: [CypherCharacters] = [
-        CypherCharacters.Characters(CharacterSets.Digits),
-        CypherCharacters.SpecialCharacters(CharactersNumber.Hexadecimal),
-        CypherCharacters.Characters( CharacterSets.Digits.union( CharacterSets.UppercaseLatinAlphabets ) ),
-
-        CypherCharacters.Characters(
-            CharacterSets.Digits
-                .union( CharacterSets.UppercaseLatinAlphabets )
-                .union( CharacterSets.LowercaseLatinAlphabets ) ),
-        CypherCharacters.Characters(CharacterSets.Base64)
+        CypherCharacters.Digits,
+        CypherCharacters.Digits.union(.UppercaseLatinAlphabets),
+        CypherCharacters.Digits.union(.UppercaseLatinAlphabets).union(.LowercaseLatinAlphabets),
+        CypherCharacters.Base64
         ]
     
     var optionLabel: UILabel?
@@ -409,7 +404,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
 
                 case "option":
                     if let stepper = (cell as? J1StepperCell)?.stepper {
-                        var opt = self.proxy!.valueForKey("option") as? Int
+                        var opt = self.proxy!.valueForKey("option") as? CypherCharacters
                         if opt == nil {
                             opt = 0
                             self.proxy!.setValue(opt!, forKey: "option")
@@ -417,7 +412,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                         
                         self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
                         stepper.minimumValue = Double( 0 )
-                        stepper.maximumValue = Double( J1RandomOption.OptionsEnd.rawValue - 1 )
+                        stepper.maximumValue = Double( charsArray.count - 1 )
                         stepper.stepValue    = Double( 1 )
                         stepper.value        = Double( opt! )
                         stepper.continuous   = false
@@ -428,7 +423,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                             assert(self.optionLabel == label, "optionLabel is reallocated \(self.optionLabel) \(label)")
                         }
                         self.optionLabel = label
-                        let str = J1RandomOption(rawValue: opt!)?.toString()
+                        let str = opt!.toString()
                         label.text = str
                     }
                     
@@ -657,7 +652,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             let val =  Int(round(stepper.value))
             self.proxy!.setValue(val, forKey: "option")
             if let label = self.optionLabel {
-                let str = J1RandomOption(rawValue: val)?.toString()
+                let str = CypherCharacters(val).toString()
                 label.text = str
             }
         default:
@@ -673,8 +668,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         if let tf = self.randomField {
             self.random = self.randgen.getRandomString(
                 self.proxy!.valueForKey("length") as! Int,
-                option:
-                    J1RandomOption(rawValue: self.proxy!.valueForKey("option") as! Int)!)!
+                char: sself.proxy!.valueForKey("option") as! CypherCharacters)!
             tf.text = self.random
         }
        
@@ -685,8 +679,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         if let tf = self.randomField {
         self.random = self.randgen.getRandomString(
             self.proxy!.valueForKey("length") as! Int,
-            option:
-            J1RandomOption(rawValue: self.proxy!.valueForKey("option") as! Int)!)!
+            chars:self.proxy!.valueForKey("option") as! CypherCharacters)!
         tf.text = self.random
     }
         self.refreshControl!.endRefreshing()
@@ -728,19 +721,21 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         return 1
     }
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return J1RandomOption.OptionsEnd.rawValue
+        return charsArray.count
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return J1RandomOption(rawValue: row)?.toString()
+        return charsArray[row].toString()
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.proxy!.setValue(
             pickerView.selectedRowInComponent(0), forKey: "option")
          if let tf = self.randomField {
-          self.random = self.randgen.getRandomString((self.proxy!.valueForKey("length") as! Int),
-            option: J1RandomOption(rawValue: (self.proxy!.valueForKey("option") as! Int))!)!
+          self.random
+                = self.randgen.getRandomString(
+                    (self.proxy!.valueForKey("length") as! Int),
+                    chars: self.proxy!.valueForKey("option") as! CypherCharacters)!
           tf.text = self.random as String
         }
     }

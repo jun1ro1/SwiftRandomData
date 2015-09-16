@@ -6,53 +6,71 @@
 //  Copyright (c) 2014 OKU Junichirou. All rights reserved.
 //
 
+import Swift
 import Foundation
 import Darwin
 
-struct CharacterSets: OptionSetType, Hashable {
-    let rawValue: UInt32
 
+
+struct CypherCharacters: OptionSetType, Hashable {
+    let rawValue: UInt32
+    
     init(rawValue: UInt32) { self.rawValue = rawValue }
     
     var hashValue: Int { return Int(self.rawValue) }
-
-    static let ExclamationMark         = CharacterSets(rawValue: 0x00000001) // "!"
-    static let QuotationMark           = CharacterSets(rawValue: 0x00000002) // '"'
-    static let NumberSign              = CharacterSets(rawValue: 0x00000004) // "#"
-    static let DollarSign              = CharacterSets(rawValue: 0x00000008) // "$"
-    static let PercentSign             = CharacterSets(rawValue: 0x00000010) // "%"
-    static let Ampersand               = CharacterSets(rawValue: 0x00000020) // "&"
-    static let Apostrophe              = CharacterSets(rawValue: 0x00000040) // "'"
-    static let Parenthesises           = CharacterSets(rawValue: 0x00000080) // "(", ")"
-    static let Asterisk                = CharacterSets(rawValue: 0x00000100) // "*"
-    static let PlusSign                = CharacterSets(rawValue: 0x00000200) // "+"
-    static let Comma                   = CharacterSets(rawValue: 0x00000400) // ","
-    static let HyphenMinus             = CharacterSets(rawValue: 0x00000800) // "-"
-    static let FullStop                = CharacterSets(rawValue: 0x00001000) // "."
-    static let Solidus                 = CharacterSets(rawValue: 0x00002000) // "/"
-    static let Digits                  = CharacterSets(rawValue: 0x00004000) // "0".."9"
-    static let Colon                   = CharacterSets(rawValue: 0x00008000) // ":"
-    static let Semicolon               = CharacterSets(rawValue: 0x00010000) // ";"
-    static let LessAndGreaterThanSigns = CharacterSets(rawValue: 0x00020000) // "<", ">"
-    static let EqualsSign              = CharacterSets(rawValue: 0x00040000) // "="
-    static let QuestionMark            = CharacterSets(rawValue: 0x00080000) // "?"
-    static let CommercialAt            = CharacterSets(rawValue: 0x00100000) // "@"
-    static let UppercaseLatinAlphabets = CharacterSets(rawValue: 0x00200000) // "A".."Z"
-    static let SquareBrackets          = CharacterSets(rawValue: 0x00400000) // "[", "]"
-    static let ReverseSolidus          = CharacterSets(rawValue: 0x00800000) // "\"
-    static let CircumflexAccent        = CharacterSets(rawValue: 0x01000000) // "^"
-    static let LowLine                 = CharacterSets(rawValue: 0x02000000) // "_"
-    static let GraveAccent             = CharacterSets(rawValue: 0x04000000) // "`"
-    static let LowercaseLatinAlphabets = CharacterSets(rawValue: 0x08000000) // "a".."z"
-    static let CurlyBrackets           = CharacterSets(rawValue: 0x10000000) // "{", "}"
-    static let VerticalLine            = CharacterSets(rawValue: 0x20000000) // "|"
-    static let Tilde                   = CharacterSets(rawValue: 0x40000000) // "~"
     
-    static let Base64                  = CharacterSets(
-                [.Digits, .UppercaseLatinAlphabets, .LowercaseLatinAlphabets, .PlusSign, .Solidus]) // 0..9 A-Za-z + /
+    static let ExclamationMark         = CypherCharacters(rawValue: 0x00000001) // "!"
+    static let QuotationMark           = CypherCharacters(rawValue: 0x00000002) // '"'
+    static let NumberSign              = CypherCharacters(rawValue: 0x00000004) // "#"
+    static let DollarSign              = CypherCharacters(rawValue: 0x00000008) // "$"
+    static let PercentSign             = CypherCharacters(rawValue: 0x00000010) // "%"
+    static let Ampersand               = CypherCharacters(rawValue: 0x00000020) // "&"
+    static let Apostrophe              = CypherCharacters(rawValue: 0x00000040) // "'"
+    static let Parenthesises           = CypherCharacters(rawValue: 0x00000080) // "(", ")"
+    static let Asterisk                = CypherCharacters(rawValue: 0x00000100) // "*"
+    static let PlusSign                = CypherCharacters(rawValue: 0x00000200) // "+"
+    static let Comma                   = CypherCharacters(rawValue: 0x00000400) // ","
+    static let HyphenMinus             = CypherCharacters(rawValue: 0x00000800) // "-"
+    static let FullStop                = CypherCharacters(rawValue: 0x00001000) // "."
+    static let Solidus                 = CypherCharacters(rawValue: 0x00002000) // "/"
+    static let Digits                  = CypherCharacters(rawValue: 0x00004000) // "0".."9"
+    static let Colon                   = CypherCharacters(rawValue: 0x00008000) // ":"
+    static let Semicolon               = CypherCharacters(rawValue: 0x00010000) // ";"
+    static let LessAndGreaterThanSigns = CypherCharacters(rawValue: 0x00020000) // "<", ">"
+    static let EqualsSign              = CypherCharacters(rawValue: 0x00040000) // "="
+    static let QuestionMark            = CypherCharacters(rawValue: 0x00080000) // "?"
+    static let CommercialAt            = CypherCharacters(rawValue: 0x00100000) // "@"
+    static let UppercaseLatinAlphabets = CypherCharacters(rawValue: 0x00200000) // "A".."Z"
+    static let SquareBrackets          = CypherCharacters(rawValue: 0x00400000) // "[", "]"
+    static let ReverseSolidus          = CypherCharacters(rawValue: 0x00800000) // "\"
+    static let CircumflexAccent        = CypherCharacters(rawValue: 0x01000000) // "^"
+    static let LowLine                 = CypherCharacters(rawValue: 0x02000000) // "_"
+    static let GraveAccent             = CypherCharacters(rawValue: 0x04000000) // "`"
+    static let LowercaseLatinAlphabets = CypherCharacters(rawValue: 0x08000000) // "a".."z"
+    static let CurlyBrackets           = CypherCharacters(rawValue: 0x10000000) // "{", "}"
+    static let VerticalLine            = CypherCharacters(rawValue: 0x20000000) // "|"
+    static let Tilde                   = CypherCharacters(rawValue: 0x40000000) // "~"
+    
+    static let Base64                  = CypherCharacters(
+        [.Digits, .UppercaseLatinAlphabets, .LowercaseLatinAlphabets, .PlusSign, .Solidus]) // 0..9 A-Za-z + /
+
+    func toString() -> String? {
+        var str = ""
+        for (key,val) in CharactersHash {
+            if self.contains(key) {
+                str += val
+            }
+        }
+        return str
+    }
+    
+    func distance(other:CypherCharacters) -> UInt32 {
+        return self.exclusiveOr(other).rawValue
+    }
+    
 }
 
- let CharactersHash: [CharacterSets: String] = [
+let CharactersHash: [CypherCharacters: String] = [
     .ExclamationMark:         "!",
     .QuotationMark:           "\"",
     .NumberSign:              "#",
@@ -85,47 +103,6 @@ struct CharacterSets: OptionSetType, Hashable {
     .VerticalLine:            "|",
     .Tilde:                   "~"
 ]
-
-struct CharactersNumber: Hashable, Equatable {
-    let rawValue: UInt32
-
-    init(rawValue: UInt32) { self.rawValue = rawValue }
-
-    var hashValue: Int { return Int(self.rawValue) }
-
-    static let Hexadecimal = CharactersNumber(rawValue: 0x80000001)
-}
-
-func ==(lhs: CharactersNumber, rhs: CharactersNumber) -> Bool {
-    return lhs.hashValue == rhs.hashValue
-}
-
-let CharacterNumberHash: [CharactersNumber: String] = [
-    .Hexadecimal: "0123456789ABCDEF"
-]
-
-
-enum CypherCharacters {
-    case Characters(CharacterSets)
-    case SpecialCharacters(CharactersNumber)
-    
-    func toString() -> String? {
-        switch self {
-        case .Characters(let s):
-            var str = ""
-            for (key,val) in CharactersHash {
-                if s.contains(key) {
-                    str += val
-                }
-            }
-            return str
-        case .SpecialCharacters(let s):
-            return CharacterNumberHash[s]
-        }
-    }
-    
-}
-
 
 /*
  let z = CypherCharacters.Characters(.Base64)
