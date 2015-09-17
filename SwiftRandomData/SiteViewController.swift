@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class SiteViewController: UITableViewController {
 
     // MARK: - Managers
     var passManager: PassManager   = PassManager.sharedManager()
@@ -26,12 +26,12 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
     var lengthLabel: UILabel?
     
     
-    let DIGITS                = "0123456789";
-    let HEXADECIMALS          = "0123456789ABCDEF"
-    let UPPER_CASE_LETTERS    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    let LOWER_CASE_LETTERS    = "abcdefghijklmnopqrstuvwxyz";
-    let ARITHMETIC_CHARACTERS = "*+-/"
-    let PUNCTATIONS           = "!\"#$%&'()*+,-./:;<=>?{|}~";
+//    let DIGITS                = "0123456789";
+//    let HEXADECIMALS          = "0123456789ABCDEF"
+//    let UPPER_CASE_LETTERS    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+//    let LOWER_CASE_LETTERS    = "abcdefghijklmnopqrstuvwxyz";
+//    let ARITHMETIC_CHARACTERS = "*+-/"
+//    let PUNCTATIONS           = "!\"#$%&'()*+,-./:;<=>?{|}~";
 
     let charsArray: [CypherCharacters] = [
         CypherCharacters.Digits,
@@ -406,15 +406,15 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
                     if let stepper = (cell as? J1StepperCell)?.stepper {
                         var opt = self.proxy!.valueForKey("option") as? CypherCharacters
                         if opt == nil {
-                            opt = 0
-                            self.proxy!.setValue(opt!, forKey: "option")
+                            opt = .Digits
+                            self.proxy!.setValue(NSNumber(unsignedInt: opt!.rawValue), forKey: "option")
                         }
                         
                         self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
                         stepper.minimumValue = Double( 0 )
                         stepper.maximumValue = Double( charsArray.count - 1 )
                         stepper.stepValue    = Double( 1 )
-                        stepper.value        = Double( opt! )
+                        stepper.value        = Double( opt!.rawValue )
                         stepper.continuous   = false
                         stepper.tag          = STEPPER_OPTION
 
@@ -652,11 +652,11 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
             let val =  Int(round(stepper.value))
             self.proxy!.setValue(val, forKey: "option")
             if let label = self.optionLabel {
-                let str = CypherCharacters(val).toString()
+                let str = charsArray[val].toString()
                 label.text = str
             }
         default:
-            let val = Int(round(stepper.value))
+            _ = Int(round(stepper.value))
         }
         
 
@@ -668,7 +668,7 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         if let tf = self.randomField {
             self.random = self.randgen.getRandomString(
                 self.proxy!.valueForKey("length") as! Int,
-                char: sself.proxy!.valueForKey("option") as! CypherCharacters)!
+                chars: self.proxy!.valueForKey("option") as! CypherCharacters)!
             tf.text = self.random
         }
        
@@ -716,29 +716,29 @@ class SiteViewController: UITableViewController, UIPickerViewDataSource, UIPicke
         }
     }
     
-    // MARK: - Picker View Delegate
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return charsArray.count
-    }
-    
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return charsArray[row].toString()
-    }
-    
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.proxy!.setValue(
-            pickerView.selectedRowInComponent(0), forKey: "option")
-         if let tf = self.randomField {
-          self.random
-                = self.randgen.getRandomString(
-                    (self.proxy!.valueForKey("length") as! Int),
-                    chars: self.proxy!.valueForKey("option") as! CypherCharacters)!
-          tf.text = self.random as String
-        }
-    }
+//    // MARK: - Picker View Delegate
+//    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+//        return 1
+//    }
+//    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+//        return charsArray.count
+//    }
+//    
+//    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+//        return charsArray[row].toString()
+//    }
+//    
+//    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+//        self.proxy!.setValue(
+//            pickerView.selectedRowInComponent(0), forKey: "option")
+//         if let tf = self.randomField {
+//          self.random
+//                = self.randgen.getRandomString(
+//                    (self.proxy!.valueForKey("length") as! Int),
+//                    chars: self.proxy!.valueForKey("option") as! CypherCharacters)!
+//          tf.text = self.random as String
+//        }
+//    }
 }
 
 // MARK: Cell Classes
