@@ -71,7 +71,6 @@ class SiteViewController: UITableViewController {
                             
                             "generated": NSIndexPath(forRow: 0, inSection:2),
                             "length":    NSIndexPath(forRow: 1, inSection:2),
-//                          "picker":    NSIndexPath(forRow: 2, inSection:2),
                             "option":    NSIndexPath(forRow: 2, inSection:2),
                             "set":       NSIndexPath(forRow: 3, inSection:2),
 
@@ -156,7 +155,6 @@ class SiteViewController: UITableViewController {
         "pass":     13,
         "length":   14,
         "char":     15,
-        "picker":   16,
         "set":      17,
         "memo":     18,
         "generator": 19
@@ -414,7 +412,7 @@ class SiteViewController: UITableViewController {
                         stepper.minimumValue = Double( 0 )
                         stepper.maximumValue = Double( charsArray.count - 1 )
                         stepper.stepValue    = Double( 1 )
-                        stepper.value        = Double( opt!.rawValue )
+                        stepper.value        = Double( opt!.rawValue ) ////
                         stepper.continuous   = false
                         stepper.tag          = STEPPER_OPTION
 
@@ -426,13 +424,6 @@ class SiteViewController: UITableViewController {
                         let str = opt!.toString()
                         label.text = str
                     }
-                    
-//                case "picker":
-//                    if var pv = (cell as? J1PcikerCell)?.picker {
-//                        pv.delegate = self
-//                        pv.dataSource = self
-//                        pv.selectRow(self.proxy!.valueForKey("option") as? Int ?? 0, inComponent: 0, animated: false)
-//                    }
                     
                 case "generator":
                     if let button = (cell as? J1ButtonCell)?.button {
@@ -469,20 +460,9 @@ class SiteViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if let key = self.indexPathToKey(indexPath) {
-            var height: CGFloat = 0.0
-            switch key {
-              case "picker":
-                    height = 162.0
-            default:
-                height = tableView.rowHeight
-            }
-            return height
-        }
-        else {
-            return tableView.rowHeight
-        }
+        return tableView.rowHeight
     }
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell: UITableViewCell? = nil
         
@@ -497,8 +477,6 @@ class SiteViewController: UITableViewController {
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellOption", forIndexPath: indexPath) as! J1StepperCell)
             case "char":
                 cell = (tableView.dequeueReusableCellWithIdentifier("CellCharacters", forIndexPath: indexPath) as UITableViewCell)
-            case "picker":
-                cell = (tableView.dequeueReusableCellWithIdentifier("CellPicker", forIndexPath: indexPath) as UITableViewCell)
             case "generator":
                 cell = (tableView.dequeueReusableCellWithIdentifier("Cell-button", forIndexPath: indexPath) as! J1ButtonCell)
             case "generated":
@@ -666,9 +644,12 @@ class SiteViewController: UITableViewController {
         }
  
         if let tf = self.randomField {
-            self.random = self.randgen.getRandomString(
-                self.proxy!.valueForKey("length") as! Int,
-                chars: self.proxy!.valueForKey("option") as! CypherCharacters)!
+            let len = self.proxy!.valueForKey("length") as! Int
+            var opt = CypherCharacters.Digits
+            if let val = self.proxy!.valueForKey("option") as? UInt32 {
+                opt = CypherCharacters(rawValue: val)
+            }
+            self.random = self.randgen.getRandomString( len, chars: opt )!
             tf.text = self.random
         }
        
@@ -677,9 +658,12 @@ class SiteViewController: UITableViewController {
     func refresh(sender:AnyObject)
     {
         if let tf = self.randomField {
-        self.random = self.randgen.getRandomString(
-            self.proxy!.valueForKey("length") as! Int,
-            chars:self.proxy!.valueForKey("option") as! CypherCharacters)!
+            let len = self.proxy!.valueForKey("length") as! Int
+            var opt = CypherCharacters.Digits
+            if let val = self.proxy!.valueForKey("option") as? UInt32 {
+                opt = CypherCharacters(rawValue: val)
+            }
+            self.random = self.randgen.getRandomString( len, chars: opt )!
         tf.text = self.random
     }
         self.refreshControl!.endRefreshing()
@@ -716,29 +700,6 @@ class SiteViewController: UITableViewController {
         }
     }
     
-//    // MARK: - Picker View Delegate
-//    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-//        return 1
-//    }
-//    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        return charsArray.count
-//    }
-//    
-//    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-//        return charsArray[row].toString()
-//    }
-//    
-//    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-//        self.proxy!.setValue(
-//            pickerView.selectedRowInComponent(0), forKey: "option")
-//         if let tf = self.randomField {
-//          self.random
-//                = self.randgen.getRandomString(
-//                    (self.proxy!.valueForKey("length") as! Int),
-//                    chars: self.proxy!.valueForKey("option") as! CypherCharacters)!
-//          tf.text = self.random as String
-//        }
-//    }
 }
 
 // MARK: Cell Classes
@@ -754,10 +715,6 @@ class J1GeneratedPassCell: UITableViewCell {
 class J1StepperCell: UITableViewCell {
     @IBOutlet var stepper: UIStepper!
     @IBOutlet var label: UILabel!
-}
-
-class J1PcikerCell: UITableViewCell {
-    @IBOutlet var picker: UIPickerView!
 }
 
 class J1ButtonCell: UITableViewCell {

@@ -64,7 +64,7 @@
                                 <connections>
                                     <outlet property="title" destination="XHf-mz-8cS" id="eZ3-Ao-eeu"/>
                                     <outlet property="url" destination="Rx9-zF-Nwx" id="HGL-mn-rNi"/>
-                                    <segue destination="Ah7-4n-0Wa" kind="showDetail" trigger="accessoryAction" id="EO4-Zv-e62"/>
+                                    <segue destination="Ah7-4n-0Wa" kind="show" identifier="ShowSite" trigger="accessoryAction" id="EO4-Zv-e62"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -342,6 +342,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="KsL-Sw-bHN"/>
+        <segue reference="EO4-Zv-e62"/>
     </inferredMetricsTieBreakers>
 </document>
