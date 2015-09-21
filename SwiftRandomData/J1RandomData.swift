@@ -51,9 +51,41 @@ struct CypherCharacters: OptionSetType, Hashable {
     static let VerticalLine            = CypherCharacters(rawValue: 0x20000000) // "|"
     static let Tilde                   = CypherCharacters(rawValue: 0x40000000) // "~"
     
-    static let Base64                  = CypherCharacters(
-        [.Digits, .UppercaseLatinAlphabets, .LowercaseLatinAlphabets, .PlusSign, .Solidus]) // 0..9 A-Za-z + /
-
+    static let AlphaNumeric            = CypherCharacters(
+        [.Digits, .UppercaseLatinAlphabets, .LowercaseLatinAlphabets]) // 0..9 A-Za-z
+    static let UpperCaseLetters        = CypherCharacters(
+        [.Digits, .UppercaseLatinAlphabets])
+    static let LowerCaseLetters        =
+        CypherCharacters.UpperCaseLetters.union(CypherCharacters.LowercaseLatinAlphabets)
+    static let Base64                  = CypherCharacters.AlphaNumeric.union(CypherCharacters([.PlusSign, .Solidus]))// 0..9 A-Za-z + /
+    static let ArithmeticCharacters    =
+        CypherCharacters.AlphaNumeric.union(
+            CypherCharacters([
+                CypherCharacters.PlusSign,
+                CypherCharacters.HyphenMinus,
+                CypherCharacters.Asterisk,
+                CypherCharacters.Solidus]))
+    static let AlphaNumericSymbols     =
+        CypherCharacters.AlphaNumeric.union(CypherCharacters([
+            .ExclamationMark,
+            .NumberSign,
+            .DollarSign,
+            .PercentSign,
+            .Ampersand,
+            .Asterisk,
+            .PlusSign,
+            .HyphenMinus,
+            .Solidus,
+            .Digits,
+            .EqualsSign,
+            .QuestionMark,
+            .CommercialAt,
+            .CircumflexAccent,
+            .LowLine,
+            .VerticalLine,
+            .Tilde
+            ]))
+    
     func toString() -> String? {
         var str = ""
         for (key,val) in CharactersHash {
@@ -67,7 +99,10 @@ struct CypherCharacters: OptionSetType, Hashable {
     func distance(other:CypherCharacters) -> UInt32 {
         return self.exclusiveOr(other).rawValue
     }
-    
+}
+
+func | (left: CypherCharacters, right: CypherCharacters) -> CypherCharacters {
+    return left.union(right)
 }
 
 let CharactersHash: [CypherCharacters: String] = [

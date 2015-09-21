@@ -26,20 +26,22 @@ class SiteViewController: UITableViewController {
     var lengthLabel: UILabel?
     
     
-//    let DIGITS                = "0123456789";
-//    let HEXADECIMALS          = "0123456789ABCDEF"
-//    let UPPER_CASE_LETTERS    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-//    let LOWER_CASE_LETTERS    = "abcdefghijklmnopqrstuvwxyz";
-//    let ARITHMETIC_CHARACTERS = "*+-/"
-//    let PUNCTATIONS           = "!\"#$%&'()*+,-./:;<=>?{|}~";
-
     let charsArray: [CypherCharacters] = [
-        CypherCharacters.Digits,
-        CypherCharacters.Digits.union(.UppercaseLatinAlphabets),
-        CypherCharacters.Digits.union(.UppercaseLatinAlphabets).union(.LowercaseLatinAlphabets),
-        CypherCharacters.Base64
+        CypherCharacters.Digits,                // "0-9"
+        CypherCharacters.UpperCaseLetters,      // "0-A-Z"
+        CypherCharacters.LowerCaseLetters,      // "0-Z a-z"
+        CypherCharacters.ArithmeticCharacters,  // "0-z *+-/"
+        CypherCharacters.AlphaNumericSymbols    // "0-z !#$%*+-/=?@^_|~"
         ]
-    
+ 
+    let charsArrayString: [CypherCharacters: String] = [
+        CypherCharacters.Digits:                "0-9",
+        CypherCharacters.UpperCaseLetters:      "0-A-Z",
+        CypherCharacters.LowerCaseLetters:      "0-Za-z",
+        CypherCharacters.ArithmeticCharacters:  "0-z*+-/",
+        CypherCharacters.AlphaNumericSymbols:   "!#$%?@^_|~"
+    ]
+
     var optionLabel: UILabel?
     
     var passField: UITextField?
@@ -402,27 +404,45 @@ class SiteViewController: UITableViewController {
 
                 case "option":
                     if let stepper = (cell as? J1StepperCell)?.stepper {
-                        var opt = self.proxy!.valueForKey("option") as? CypherCharacters
-                        if opt == nil {
-                            opt = .Digits
-                            self.proxy!.setValue(NSNumber(unsignedInt: opt!.rawValue), forKey: "option")
-                        }
-                        
                         self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
-                        stepper.minimumValue = Double( 0 )
-                        stepper.maximumValue = Double( charsArray.count - 1 )
-                        stepper.stepValue    = Double( 1 )
-                        stepper.value        = Double( opt!.rawValue ) ////
+                        stepper.minimumValue = Double(0)
+                        stepper.maximumValue = Double(charsArray.count - 1)
+                        stepper.stepValue    = Double(1)
                         stepper.continuous   = false
                         stepper.tag          = STEPPER_OPTION
+
+                        var elm = 0
+                        if let num = self.proxy!.valueForKey("option") as? NSNumber {
+                            if let e = charsArray.map({CypherCharacters(rawValue: num.unsignedIntValue).distance($0)}).enumerate().minElement({$0.1 < $1.1}) {
+                            elm = e.0
+                            }
+                        }
+//                        var elm = 0
+//                        var min = CypherCharacters.Digits.distance(.Digits)
+//                        if let num = self.proxy!.valueForKey("option") as? NSNumber {
+//                            for (idx, val) in charsArray.map({
+//                                    CypherCharacters(rawValue: num.unsignedIntValue).distance($0)
+//                            }).enumerate() {
+//                                if val <= min {
+//                                    min = val
+//                                    elm = idx
+//                                }
+//                            }
+//                        }
+                        let opt = charsArray[elm]
+                        stepper.value = Double( elm )
 
                         let label = (cell as! J1StepperCell).label
                         if self.optionLabel != nil {
                             assert(self.optionLabel == label, "optionLabel is reallocated \(self.optionLabel) \(label)")
                         }
                         self.optionLabel = label
-                        let str = opt!.toString()
-                        label.text = str
+                        if let str = charsArrayString[opt] {
+                            label.text = str
+                        }
+                        else {
+                            label.text = ""
+                        }
                     }
                     
                 case "generator":
@@ -627,11 +647,16 @@ class SiteViewController: UITableViewController {
                 label.text = str as String
             }
         case STEPPER_OPTION:
-            let val =  Int(round(stepper.value))
-            self.proxy!.setValue(val, forKey: "option")
+            let val = Int(round(stepper.value))
+            let opt = charsArray[val]
+            self.proxy!.setValue(NSNumber(unsignedInt: opt.rawValue), forKey: "option")
             if let label = self.optionLabel {
-                let str = charsArray[val].toString()
-                label.text = str
+                if let str = charsArrayString[opt] {
+                    label.text = str
+                }
+                else {
+                    label.text = ""
+                }
             }
         default:
             _ = Int(round(stepper.value))
@@ -646,8 +671,8 @@ class SiteViewController: UITableViewController {
         if let tf = self.randomField {
             let len = self.proxy!.valueForKey("length") as! Int
             var opt = CypherCharacters.Digits
-            if let val = self.proxy!.valueForKey("option") as? UInt32 {
-                opt = CypherCharacters(rawValue: val)
+            if let val = self.proxy!.valueForKey("option") as? NSNumber {
+                opt = CypherCharacters(rawValue: val.unsignedIntValue)
             }
             self.random = self.randgen.getRandomString( len, chars: opt )!
             tf.text = self.random
@@ -660,8 +685,8 @@ class SiteViewController: UITableViewController {
         if let tf = self.randomField {
             let len = self.proxy!.valueForKey("length") as! Int
             var opt = CypherCharacters.Digits
-            if let val = self.proxy!.valueForKey("option") as? UInt32 {
-                opt = CypherCharacters(rawValue: val)
+            if let val = self.proxy!.valueForKey("option") as? NSNumber {
+                opt = CypherCharacters(rawValue: val.unsignedIntValue)
             }
             self.random = self.randgen.getRandomString( len, chars: opt )!
         tf.text = self.random
