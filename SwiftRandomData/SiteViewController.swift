@@ -51,6 +51,8 @@ class SiteViewController: UITableViewController {
     
     let STEPPER_LENGTH = 1
     let STEPPER_OPTION = 2
+    
+    let cipherMan = J1CipherMan()
 
 
     // MARK: - Coordinator functions between keys and index paths
