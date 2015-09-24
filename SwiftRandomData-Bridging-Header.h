@@ -11,5 +11,6 @@
 
 #import <CommonCrypto/CommonHMAC.h>
 #import <CommonCrypto/COmmonDigest.h>
+#import <CommonCrypto/CommonKeyDerivation.h>
 
 #endif /* SwiftRandomData_Bridging_Header_h */
