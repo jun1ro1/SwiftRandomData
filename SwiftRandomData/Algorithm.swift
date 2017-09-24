@@ -14,7 +14,7 @@ func unique<T: Equatable>(array: [T]) -> [T] {
     var result = [T]()
     
     for elm in array {
-        if result.indexOf(elm) == nil {
+        if result.index(of: elm) == nil {
             result += [elm]
         }
     }

@@ -35,7 +35,7 @@ extension Site {
     override func awakeFromInsert() {
         self.setPrimitiveValue(NSDate(), forKey: "createdAt")
         self.setPrimitiveValue(4, forKey: "length")
-        self.setPrimitiveValue(NSUUID().UUIDString, forKey: "uuid")
+        self.setPrimitiveValue(NSUUID().uuidString, forKey: "uuid")
     }
     
     func addPasswordObject( pass: Password ){
@@ -46,8 +46,8 @@ extension Site {
     
     func removePasswordObject( pass: Password ){
         var array = self.passwords.allObjects as! [Password]
-        if let index = array.indexOf(pass ) {
-            array.removeAtIndex(index)
+        if let index = array.index(of: pass ) {
+            array.remove(at: index)
         }
     }
 }

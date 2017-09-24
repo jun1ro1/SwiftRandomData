@@ -30,14 +30,14 @@ class PassManager {
         let cdm = J1CoreDataManager.sharedInstance
         let context = cdm.managedObjectContext!
         let obj
-            = NSEntityDescription.insertNewObjectForEntityForName(ENTITY_PASS, inManagedObjectContext: context)
+            = NSEntityDescription.insertNewObject(forEntityName: ENTITY_PASS, into: context)
                 as! Password
         obj.setPrimitiveValue(true ,    forKey: "active")
         obj.setPrimitiveValue(NSDate(), forKey: "createdAt")
         if site != nil {
             obj.site = site!
             obj.setPrimitiveValue(site!, forKey: "site")
-            site?.addPasswordObject(obj)
+            site?.addPasswordObject(pass: obj)
         }
         return obj
     }
@@ -47,9 +47,9 @@ class PassManager {
     }
     
     func delete(obj:Password) {
-        obj.site.removePasswordObject(obj)
+        obj.site.removePasswordObject(pass: obj)
         let context = self._managedObjectContext
-        context!.deleteObject(obj)
+        context!.delete(obj)
         
         var error: NSError? = nil
         _ = error

@@ -64,7 +64,7 @@ class J1CipherMan {
         ptr = UnsafeBufferPointer(start: iv!, count: iv!.count)
         self._iv = NSMutableData(bytes: ptr.baseAddress, length: ptr.count)
 
-        var plain = NSMutableData(data: contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+        let plain = NSMutableData(data: contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         let cipher = NSMutableData(length: contents.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)+kCCBlockSizeAES128);
         var dataMoved: size_t = 0
         

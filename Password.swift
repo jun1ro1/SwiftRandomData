@@ -25,6 +25,6 @@ class Password: NSManagedObject {
 extension Password {
     override func awakeFromInsert() {
         self.setPrimitiveValue(NSDate(), forKey: "createdAt")
-        self.setPrimitiveValue(NSUUID().UUIDString, forKey: "uuid")
+        self.setPrimitiveValue(NSUUID().uuidString, forKey: "uuid")
     }
 }

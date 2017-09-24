@@ -33,7 +33,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "insertNewObject:")
+        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MasterViewController.insertNewObject(_:)))
         self.navigationItem.rightBarButtonItem = addButton
 
 /*
@@ -50,7 +50,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         if let indexPath = self.tableView.indexPathForSelectedRow {
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
@@ -92,7 +92,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return self.fetchedResultsController.sections?.count ?? 0
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
         return sectionInfo.numberOfObjects
     }
@@ -201,7 +201,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     // MARK: - Fetched results controller
 
-    var fetchedResultsController: NSFetchedResultsController {
+    var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> {
         if _fetchedResultsController != nil {
             return _fetchedResultsController!
             }
@@ -239,25 +239,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             return _fetchedResultsController!
     }
-    private var _fetchedResultsController: NSFetchedResultsController? = nil
+    private var _fetchedResultsController: NSFetchedResultsController?? = nil
 
 
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+    func controllerWillChangeContent(controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.beginUpdates()
     }
 
-    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+    func controller(controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
         switch type {
-            case .Insert:
+        case .insert:
                 self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-            case .Delete:
-                self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        case .delete:
+                self.tableView.deleteSections(NSIndexSet(index: sectionIndex) as IndexSet, withRowAnimation: .Fade)
             default:
                 return
         }
     }
 
-    func controller(controller: NSFetchedResultsController,
+    func controller(controller: NSFetchedResultsController<NSFetchRequestResult>,
                     didChangeObject anObject: AnyObject,
                     atIndexPath indexPath: NSIndexPath?,
                     forChangeType type: NSFetchedResultsChangeType,

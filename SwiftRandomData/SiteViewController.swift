@@ -1,3 +1,5 @@
+
+
 //
 //  SiteViewController.swift
 //  SwiftRandomData
@@ -187,7 +189,7 @@ class SiteViewController: UITableViewController {
 
     private var _editing: Bool = false
     
-    override func setEditing(editing: Bool, animated: Bool) {
+    override func setEditing(_ editing: Bool, animated: Bool) {
         
         if !animated {
             self._editing = editing
@@ -208,16 +210,16 @@ class SiteViewController: UITableViewController {
             let afterPaths: [NSIndexPath]  = Array( self._keyToIndexPath.values )
             let afterSections: [Int] = afterPaths.map { $0.section }
             
-            _ = difference(afterSections, y: beforeSections).map {
-                self.tableView.insertSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
+            _ = difference(x: afterSections, y: beforeSections).map {
+                self.tableView.insertSections(NSIndexSet(index: $0) as IndexSet, with: .fade)
             }
-            _ = difference(beforeSections, y: afterSections).map {
-                self.tableView.deleteSections(NSIndexSet(index: $0), withRowAnimation: .Fade)
+            _ = difference(x: beforeSections, y: afterSections).map {
+                self.tableView.deleteSections(NSIndexSet(index: $0) as IndexSet, withRowAnimation: .fade)
             }
             
-            self.tableView.insertRowsAtIndexPaths(difference(afterPaths, y: beforePaths), withRowAnimation: .Fade)
-            self.tableView.deleteRowsAtIndexPaths(difference(beforePaths, y: afterPaths), withRowAnimation: .Fade)
-            self.tableView.reloadRowsAtIndexPaths(intersection(beforePaths, y: afterPaths), withRowAnimation: .Fade)
+            self.tableView.insertRows(at: difference(x: afterPaths, y: beforePaths) as [IndexPath], with: .fade)
+            self.tableView.deleteRowsAtIndexPaths(difference(x: beforePaths, y: afterPaths) as [IndexPath], withRowAnimation: .fadefade)
+            self.tableView.reloadRowsAtIndexPaths(intersection(x: beforePaths, y: afterPaths) as [IndexPath] as [IndexPath], withRowAnimation: .Fade)
             
             self.tableView.endUpdates()
             self.configureButtons(animated: animated)
@@ -228,7 +230,7 @@ class SiteViewController: UITableViewController {
         self.setEditing(true, animated: true)
     }
     
-    func exitFromEdigintMode(sender: AnyObject) {
+    func exitFromEditintgMode(sender: AnyObject) {
         self.setEditing(false, animated: true)
     }
     
@@ -247,11 +249,11 @@ class SiteViewController: UITableViewController {
 
     func configureButtons(animated animated: Bool) {
         if  self.editing() {
-            let addButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "exitFromEdigintMode:")
+            let addButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector( exitFromEditintgMode))
             self.navigationItem.setRightBarButtonItem(addButton, animated: animated)
         }
         else {
-            let addButton = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: "setToEditingMode:")
+            let addButton = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector( setToEditingMode ) )
             self.navigationItem.setRightBarButtonItem(addButton, animated: animated)
         }
         
@@ -271,20 +273,20 @@ class SiteViewController: UITableViewController {
         self.configureButtons(animated: false)
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.title = self.proxy!.valueForKey("title") as? String
-        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
+        self.title = self.proxy!.valueForKey(key: "title") as? String
+        self.tableView.scrollToRow(at: NSIndexPath(forRow: 0, inSection: 0) as IndexPath, at: .top, animated: false)
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if self.proxy!.hasChanges {
             self.proxy!.writeBack {
                 (key, val) in
-                if let indexPath = self.keyToIndexPath(key as! String) {
+                if let indexPath = self.keyToIndexPath(key: key,: key as! String) {
                     self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
 
                 }
@@ -292,7 +294,7 @@ class SiteViewController: UITableViewController {
         }
     }
     
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         let changed = self.proxy!.hasChanges
@@ -329,7 +331,7 @@ class SiteViewController: UITableViewController {
         return sec + 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
         var rows = 0
@@ -370,7 +372,7 @@ class SiteViewController: UITableViewController {
                         tf.text        = self.proxy!.valueForKey(key) as? String
                         tf.placeholder = self._keyToPlaceholder[key]
                         tf.tag = tag
-                        self.addTarget(tf, action: "tapped:", forControlEvents: .EditingDidEnd)
+                        self.addTarget(tf, action: #selector(SiteViewController.tapped(_:)), forControlEvents: .EditingDidEnd)
                         if key == "pass" {
                             self.passField = tf
                         }
@@ -378,7 +380,7 @@ class SiteViewController: UITableViewController {
                     
                 case "length":
                     if let stepper = (cell as? J1StepperCell)?.stepper {
-                        self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
+                        self.addTarget(stepper, action: #selector(SiteViewController.valueChanged(_:)), forControlEvents: .ValueChanged)
                         stepper.minimumValue = Double( 0 )
                         stepper.maximumValue = Double( lengthArray.count - 1 )
                         stepper.stepValue    = Double( 1 )
@@ -406,7 +408,7 @@ class SiteViewController: UITableViewController {
 
                 case "option":
                     if let stepper = (cell as? J1StepperCell)?.stepper {
-                        self.addTarget(stepper, action: "valueChanged:", forControlEvents: .ValueChanged)
+                        self.addTarget(stepper, action: #selector(SiteViewController.valueChanged(_:)), forControlEvents: .ValueChanged)
                         stepper.minimumValue = Double(0)
                         stepper.maximumValue = Double(charsArray.count - 1)
                         stepper.stepValue    = Double(1)
@@ -450,7 +452,7 @@ class SiteViewController: UITableViewController {
                 case "generator":
                     if let button = (cell as? J1ButtonCell)?.button {
                         button.titleLabel?.text = "Password Generator"
-                        button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
+                        button.addTarget(self, action: #selector(SiteViewController.tapped(_:)), forControlEvents: .TouchDown)
                         let tag = self.keyToTag(key) ?? 0
                         button.tag = tag
                     }
@@ -463,7 +465,7 @@ class SiteViewController: UITableViewController {
                     
                 case "set":
                     if let button = (cell as? J1ButtonCell)?.button {
-                        button.addTarget(self, action: "tapped:", forControlEvents: .TouchDown)
+                        button.addTarget(self, action: #selector(SiteViewController.tapped(_:)), forControlEvents: .TouchDown)
                         let tag = self.keyToTag(key) ?? 0
                         button.tag = tag
                     }
@@ -597,7 +599,7 @@ class SiteViewController: UITableViewController {
         if self._generatorShowed {
             self.refreshControl = UIRefreshControl()
             self.refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refersh")
-            self.refreshControl?.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+            self.refreshControl?.addTarget(self, action: #selector(SiteViewController.refresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
         }
         else {
             self.refreshControl = nil

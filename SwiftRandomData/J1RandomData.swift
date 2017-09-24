@@ -11,7 +11,6 @@ import Foundation
 import Darwin
 
 
-
 struct CypherCharacters: OptionSetType, Hashable {
     let rawValue: UInt32
     
@@ -139,53 +138,6 @@ let CharactersHash: [CypherCharacters: String] = [
     .Tilde:                   "~"
 ]
 
-/*
- let z = CypherCharacters.Characters(.Base64)
- let y = CypherCharacters.SpecialCharacters(.Hexadecimal)
-
-
- let xx: CypherCharacter = CypherCharacter( .ExclamationMark.rawValue & .NumberSign.rawValue )
-
-let DIGITS                = "0123456789";
-let HEXADECIMALS          = "0123456789ABCDEF"
-let UPPER_CASE_LETTERS    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-let LOWER_CASE_LETTERS    = "abcdefghijklmnopqrstuvwxyz";
-let ARITHMETIC_CHARACTERS = "*+-/"
-let PUNCTATIONS           = "!\"#$%&'()*+,-./:;<=>?{|}~";
-
-
-enum J1RandomOption: Int {
-    case Digits
-    case HexDigits
-    case UpperCaseLetters
-    case LowerCaseLetters
-    case ArithmeticCharacters
-    case Punctations
-    case OptionsEnd
-    
-    func toString() -> String {
-        var str = ""
-        
-        switch self {
-        case .Digits:
-            str = "0-9"
-        case .HexDigits:
-            str = "0-A-F"
-        case .UpperCaseLetters:
-            str = "0-A-Z"
-        case .LowerCaseLetters:
-            str = "0-Z a-z"
-        case .ArithmeticCharacters:
-            str = "0-z *+-/"
-        case .Punctations:
-            str = "0-z *(){}"
-        default:
-            str = "???"
-        }
-        return str
-    }
-}
-*/
 
 class J1RandomData {
     
@@ -215,12 +167,12 @@ class J1RandomData {
                 let d = UnsafeBufferPointer( start: UnsafePointer<UInt8>( bytes ), count: range.length )
                 for j in range.location..<range.length {
                     array[ i ] = d[ j ]
-                    ++i
+                    i += 1
                 }
         })
-        
 
-// data must be cleared for a security reason.
+        // data must be cleared for a security reason.
+        data?.resetBytesInRange(NSRange(location: 0, length: length))
 
         return array
     }
@@ -234,22 +186,6 @@ class J1RandomData {
         guard let letters = chars.toString() else {
             return nil
         }
-//        switch option {
-//        case .Digits:
-//            letters = DIGITS
-//        case .HexDigits:
-//            letters = HEXADECIMALS
-//        case .UpperCaseLetters:
-//            letters = DIGITS + UPPER_CASE_LETTERS
-//        case .LowerCaseLetters:
-//            letters = DIGITS + UPPER_CASE_LETTERS + LOWER_CASE_LETTERS
-//        case .ArithmeticCharacters:
-//            letters = DIGITS + UPPER_CASE_LETTERS + LOWER_CASE_LETTERS + ARITHMETIC_CHARACTERS
-//        case .Punctations:
-//            letters = DIGITS + UPPER_CASE_LETTERS + LOWER_CASE_LETTERS + PUNCTATIONS
-//        default:
-//            letters = DIGITS + UPPER_CASE_LETTERS + LOWER_CASE_LETTERS + PUNCTATIONS
-//        }
         
         var letterArray: [Character] = []
         for ch in letters.characters {
@@ -262,7 +198,7 @@ class J1RandomData {
         var n = 0
         while b < numLetters {
             b *= 2
-            ++n
+            n += 1
         }
         
         let bytes = ( length * n + 7 ) / 8
@@ -281,11 +217,11 @@ class J1RandomData {
         for ch in charArray {
             if ns < length {
                 str += String( letterArray[ Int( ch ) ] )
-                ++ns
+                ns += 1
             }
         }
         
-        return str
+        return str.characters.count == 0 ? nil : str;
     }
     
 }
