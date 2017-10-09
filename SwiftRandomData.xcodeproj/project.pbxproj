@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F91EFEED19E1539500112153 /* SiteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91EFEEC19E1539500112153 /* SiteViewController.swift */; };
 		F93486AF1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93486AE1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift */; };
+		F947A3641F8BB4C000746EBA /* RandomData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F947A3631F8BB4C000746EBA /* RandomData.swift */; };
 		F957E8F319C6FBAB00A4BA46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F219C6FBAB00A4BA46 /* AppDelegate.swift */; };
 		F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F719C6FBAB00A4BA46 /* MasterViewController.swift */; };
 		F957E8FA19C6FBAB00A4BA46 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */; };
@@ -29,6 +30,7 @@
 		F98FDBE71BB042800057086F /* J1CipherMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98FDBE61BB042800057086F /* J1CipherMan.swift */; };
 		F99DD0B41A2366440046B1C0 /* PassManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99DD0B31A2366440046B1C0 /* PassManager.swift */; };
 		F99DD0BB1A237B000046B1C0 /* PassViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99DD0BA1A237B000046B1C0 /* PassViewController.swift */; };
+		F9E95B7E1F889E2200396328 /* AsBytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E95B7D1F889E2200396328 /* AsBytes.swift */; };
 		F9F50B751A56E4F000322BE2 /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F50B741A56E4F000322BE2 /* Algorithm.swift */; };
 		F9F50B761A56E4F000322BE2 /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F50B741A56E4F000322BE2 /* Algorithm.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +48,7 @@
 /* Begin PBXFileReference section */
 		F91EFEEC19E1539500112153 /* SiteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiteViewController.swift; sourceTree = "<group>"; };
 		F93486AE1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = J1ManagedObjectProxy.swift; sourceTree = "<group>"; };
+		F947A3631F8BB4C000746EBA /* RandomData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomData.swift; sourceTree = "<group>"; };
 		F9490E151A2B5834001C860C /* SwiftRandomData 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 4.xcdatamodel"; sourceTree = "<group>"; };
 		F957E8ED19C6FBAB00A4BA46 /* SwiftRandomData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftRandomData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F957E8F119C6FBAB00A4BA46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -72,7 +75,7 @@
 		F99DD0B51A2367D30046B1C0 /* SwiftRandomData 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 3.xcdatamodel"; sourceTree = "<group>"; };
 		F99DD0BA1A237B000046B1C0 /* PassViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassViewController.swift; sourceTree = "<group>"; };
 		F9C45D0A1A34420400B62130 /* SwiftRandomData 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 5.xcdatamodel"; sourceTree = "<group>"; };
-		F9EF29A719DDB704001D9509 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		F9E95B7D1F889E2200396328 /* AsBytes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsBytes.swift; sourceTree = "<group>"; };
 		F9EF76BC1A18A94700912789 /* SwiftRandomData 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SwiftRandomData 2.xcdatamodel"; sourceTree = "<group>"; };
 		F9F50B741A56E4F000322BE2 /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -118,14 +121,16 @@
 		F957E8EF19C6FBAB00A4BA46 /* SwiftRandomData */ = {
 			isa = PBXGroup;
 			children = (
+				F9E95B7D1F889E2200396328 /* AsBytes.swift */,
+				F947A3631F8BB4C000746EBA /* RandomData.swift */,
 				F93486AE1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift */,
+				F91EFEEC19E1539500112153 /* SiteViewController.swift */,
 				F9F50B741A56E4F000322BE2 /* Algorithm.swift */,
 				F95AA38B1A41D29200C08417 /* Site.swift */,
 				F95AA3881A41D29100C08417 /* Password.swift */,
 				F957E8F919C6FBAB00A4BA46 /* DetailViewController.swift */,
 				F957E8F219C6FBAB00A4BA46 /* AppDelegate.swift */,
 				F957E91719C6FC1600A4BA46 /* Bytes.swift */,
-				F91EFEEC19E1539500112153 /* SiteViewController.swift */,
 				F957E92219C702AD00A4BA46 /* J1CoreDataManager.swift */,
 				F957E91919C6FD0B00A4BA46 /* J1RandomData.swift */,
 				F957E92419C7197C00A4BA46 /* J1SiteManager.swift */,
@@ -137,7 +142,6 @@
 				F957E8FB19C6FBAB00A4BA46 /* Main.storyboard */,
 				F957E8F019C6FBAB00A4BA46 /* Supporting Files */,
 				F957E8F419C6FBAB00A4BA46 /* SwiftRandomData.xcdatamodeld */,
-				F9EF29A719DDB704001D9509 /* MyPlayground.playground */,
 			);
 			path = SwiftRandomData;
 			sourceTree = "<group>";
@@ -276,6 +280,7 @@
 				F99DD0B41A2366440046B1C0 /* PassManager.swift in Sources */,
 				F957E8F819C6FBAB00A4BA46 /* MasterViewController.swift in Sources */,
 				F957E92519C7197C00A4BA46 /* J1SiteManager.swift in Sources */,
+				F9E95B7E1F889E2200396328 /* AsBytes.swift in Sources */,
 				F95AA38C1A41D29200C08417 /* Site.swift in Sources */,
 				F93486AF1A7DB77C00C8C2B1 /* J1ManagedObjectProxy.swift in Sources */,
 				F9F50B751A56E4F000322BE2 /* Algorithm.swift in Sources */,
@@ -286,6 +291,7 @@
 				F91EFEED19E1539500112153 /* SiteViewController.swift in Sources */,
 				F98FDBE71BB042800057086F /* J1CipherMan.swift in Sources */,
 				F99DD0BB1A237B000046B1C0 /* PassViewController.swift in Sources */,
+				F947A3641F8BB4C000746EBA /* RandomData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,7 +385,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -424,7 +430,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
